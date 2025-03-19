@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Plane, Users, Clock, BarChart3 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import StatsCard from '@/components/dashboard/StatsCard';
 import FlightTable from '@/components/dashboard/FlightTable';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
+import FlightSearch from '@/components/dashboard/FlightSearch';
 
 const Index = () => {
   // Mock data for the dashboard
@@ -130,6 +130,8 @@ const Index = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
+            <FlightSearch />
+            
             <div>
               <h2 className="text-lg font-semibold mb-3">Upcoming Departures</h2>
               <FlightTable flights={departureFlights} type="departure" />
