@@ -26,8 +26,8 @@ const Index = () => {
       actualTime: "10:45 AM", 
       gate: "B12", 
       terminal: "T2", 
-      status: "Boarding", 
-      type: "departure" 
+      status: "Boarding" as const, 
+      type: "departure" as const
     },
     { 
       id: "2", 
@@ -39,8 +39,8 @@ const Index = () => {
       actualTime: "11:15 AM", 
       gate: "C5", 
       terminal: "T3", 
-      status: "On Time", 
-      type: "departure" 
+      status: "On Time" as const, 
+      type: "departure" as const
     },
     { 
       id: "3", 
@@ -52,8 +52,8 @@ const Index = () => {
       actualTime: "12:45 PM", 
       gate: "A7", 
       terminal: "T1", 
-      status: "Delayed", 
-      type: "departure" 
+      status: "Delayed" as const,
+      type: "departure" as const
     }
   ];
 
@@ -68,8 +68,8 @@ const Index = () => {
       actualTime: "09:40 AM", 
       gate: "D3", 
       terminal: "T4", 
-      status: "Arrived", 
-      type: "arrival" 
+      status: "Arrived" as const, 
+      type: "arrival" as const
     },
     { 
       id: "5", 
@@ -81,8 +81,8 @@ const Index = () => {
       actualTime: "10:35 AM", 
       gate: "C8", 
       terminal: "T3", 
-      status: "Delayed", 
-      type: "arrival" 
+      status: "Delayed" as const, 
+      type: "arrival" as const
     },
     { 
       id: "6", 
@@ -94,14 +94,14 @@ const Index = () => {
       actualTime: "--", 
       gate: "B2", 
       terminal: "T2", 
-      status: "On Time", 
-      type: "arrival" 
+      status: "On Time" as const, 
+      type: "arrival" as const
     }
   ];
 
   const weatherData = {
     temperature: 29,
-    condition: "partly cloudy",
+    condition: "cloudy" as const, // Changed from "partly cloudy" to match the expected type
     windSpeed: 12,
     windDirection: "NE",
     humidity: 78,
