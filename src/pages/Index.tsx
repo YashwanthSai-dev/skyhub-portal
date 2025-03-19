@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Plane, Users, Clock, BarChart3 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
@@ -101,7 +102,7 @@ const Index = () => {
 
   const weatherData = {
     temperature: 29,
-    condition: "cloudy" as const, // Changed from "partly cloudy" to match the expected type
+    condition: "cloudy" as const,
     windSpeed: 12,
     windDirection: "NE",
     humidity: 78,

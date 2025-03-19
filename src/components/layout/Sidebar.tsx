@@ -6,7 +6,6 @@ import {
   PlaneTakeoff, 
   PlaneLanding, 
   Clock, 
-  Users, 
   CalendarDays, 
   BarChart3, 
   Settings, 
@@ -67,14 +66,6 @@ const Sidebar = () => {
                 <Link to="/gates">
                   <Clock className="h-4 w-4" />
                   <span>Gate Management</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to="/staff">
-                  <Users className="h-4 w-4" />
-                  <span>Staff Scheduling</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
