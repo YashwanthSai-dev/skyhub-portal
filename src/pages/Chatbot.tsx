@@ -64,7 +64,7 @@ const Chatbot = () => {
     const lowercaseMessage = message.toLowerCase();
 
     if (lowercaseMessage.includes('hi') || lowercaseMessage.includes('hello')) {
-      return 'Hello, Welcome to skyhub how can i help you.';
+      return 'Hello, Iam a chatbot created by Team 4 PSD Students.';
     } else if (lowercaseMessage.includes('flight') && lowercaseMessage.includes('status')) {
       return 'You can check flight status on the Schedule page. Would you like me to navigate you there?';
     } else if (lowercaseMessage.includes('check-in')) {
@@ -96,7 +96,7 @@ const Chatbot = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
-              Virtual Assistant (powered by Gradio)
+              Virtual Assistant (Inspired from Gradio Chatbot)
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-4 overflow-hidden flex flex-col">
