@@ -64,7 +64,9 @@ const Chatbot = () => {
     const lowercaseMessage = message.toLowerCase();
 
     if (lowercaseMessage.includes('hi') || lowercaseMessage.includes('hello')) {
-      return 'Hello, Iam a chatbot created by Team 4 PSD Students.';
+      return 'Hello, Whom you want to talk with Yashwanth, Sanjana or Moditha .';
+    } else if (lowercaseMessage.includes('Yashwanth') || lowercaseMessage.includes('Sanjana') || lowercaseMessage.includes('Moditha'){
+      return 'Welcome to Skyhub, How can i help you.?'
     } else if (lowercaseMessage.includes('flight') && lowercaseMessage.includes('status')) {
       return 'You can check flight status on the Schedule page. Would you like me to navigate you there?';
     } else if (lowercaseMessage.includes('check-in')) {
