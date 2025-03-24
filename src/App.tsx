@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Schedule from "./pages/Schedule";
 import CheckIn from "./pages/CheckIn";
 import Report from "./pages/Report";
+import FlightPricePrediction from "./pages/FlightPricePrediction";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/check-in" element={<CheckIn />} />
           <Route path="/report" element={<Report />} />
           <Route path="/reports" element={<Navigate to="/report" replace />} />
+          <Route path="/price-prediction" element={<FlightPricePrediction />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

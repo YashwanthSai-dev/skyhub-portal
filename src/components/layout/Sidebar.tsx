@@ -3,14 +3,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  PlaneTakeoff, 
-  PlaneLanding, 
   Clock, 
   CalendarDays, 
   BarChart3, 
   Settings, 
   LogOut,
-  CheckSquare
+  CheckSquare,
+  TrendingUp
 } from 'lucide-react';
 import { 
   Sidebar as SidebarComponent,
@@ -30,7 +29,7 @@ const Sidebar = () => {
       <SidebarHeader className="py-4">
         <div className="px-3 flex items-center gap-2">
           <div className="size-8 rounded-full airport-gradient flex items-center justify-center">
-            <PlaneTakeoff className="text-white h-5 w-5" />
+            <TrendingUp className="text-white h-5 w-5" />
           </div>
           <span className="font-bold text-lg">SkyHub</span>
         </div>
@@ -48,17 +47,9 @@ const Sidebar = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/flights/departures">
-                  <PlaneTakeoff className="h-4 w-4" />
-                  <span>Departures</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to="/flights/arrivals">
-                  <PlaneLanding className="h-4 w-4" />
-                  <span>Arrivals</span>
+                <Link to="/price-prediction">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Flight Price Prediction</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
