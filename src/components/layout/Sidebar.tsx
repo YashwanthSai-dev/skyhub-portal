@@ -3,13 +3,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Clock, 
   CalendarDays, 
   BarChart3, 
   Settings, 
   LogOut,
   CheckSquare,
-  TrendingUp
+  TrendingUp,
+  MessageCircle
 } from 'lucide-react';
 import { 
   Sidebar as SidebarComponent,
@@ -55,9 +55,9 @@ const Sidebar = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link to="/gates">
-                  <Clock className="h-4 w-4" />
-                  <span>Gate Management</span>
+                <Link to="/chatbot">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>Chatbot</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

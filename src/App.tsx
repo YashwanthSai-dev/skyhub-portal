@@ -10,6 +10,7 @@ import Schedule from "./pages/Schedule";
 import CheckIn from "./pages/CheckIn";
 import Report from "./pages/Report";
 import FlightPricePrediction from "./pages/FlightPricePrediction";
+import Chatbot from "./pages/Chatbot";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/report" element={<Report />} />
           <Route path="/reports" element={<Navigate to="/report" replace />} />
           <Route path="/price-prediction" element={<FlightPricePrediction />} />
+          <Route path="/chatbot" element={<Chatbot />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
