@@ -64,9 +64,9 @@ const Chatbot = () => {
     const lowercaseMessage = message.toLowerCase();
 
     if (lowercaseMessage.includes('hi') || lowercaseMessage.includes('hello')) {
-      return 'Hello, Whom you want to talk with Yashwanth, Sanjana or Moditha .';
-    } else if (lowercaseMessage.includes('Yashwanth') || lowercaseMessage.includes('Sanjana') || lowercaseMessage.includes('Moditha'){
-      return 'Welcome to Skyhub, How can i help you.?'
+      return 'Hello! Who would you like to talk with - Yashwanth, Sanjana or Moditha?';
+    } else if (lowercaseMessage.includes('yashwanth') || lowercaseMessage.includes('sanjana') || lowercaseMessage.includes('moditha')) {
+      return 'Welcome to SkyHub! How can I help you?';
     } else if (lowercaseMessage.includes('flight') && lowercaseMessage.includes('status')) {
       return 'You can check flight status on the Schedule page. Would you like me to navigate you there?';
     } else if (lowercaseMessage.includes('check-in')) {
@@ -98,7 +98,7 @@ const Chatbot = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
-              Virtual Assistant (Inspired from Gradio Chatbot)
+              Virtual Assistant
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-4 overflow-hidden flex flex-col">
@@ -138,14 +138,6 @@ const Chatbot = () => {
             </div>
           </CardContent>
         </Card>
-        
-        {/* Hidden iframe that loads the Gradio app - could be used for more advanced integration */}
-        <iframe 
-          ref={iframeRef}
-          src="https://gradio-simple-chatbot-demo.hf.space"
-          style={{ display: 'none' }}
-          title="Gradio Backend"
-        />
       </div>
     </Layout>
   );
