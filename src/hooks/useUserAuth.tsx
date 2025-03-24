@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface User {
   id: string;
@@ -70,6 +71,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       localStorage.setItem('skyHubUsers', JSON.stringify([...existingUsers, newUser]));
       localStorage.setItem('skyHubUser', JSON.stringify(newUser));
       setUser(newUser);
+      toast.success(`Welcome ${newUser.name}! Your account has been created and you are now logged in.`);
       return true;
     } else {
       // Check login credentials
@@ -81,6 +83,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         // For demo, we just check if the email exists
         localStorage.setItem('skyHubUser', JSON.stringify(foundUser));
         setUser(foundUser);
+        toast.success(`Welcome back, ${foundUser.name}! You are now logged in and ready to use SkyHub.`);
         return true;
       }
       
@@ -91,6 +94,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const logout = () => {
     localStorage.removeItem('skyHubUser');
     setUser(null);
+    toast.info('You have been logged out.');
   };
 
   return (

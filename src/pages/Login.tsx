@@ -46,13 +46,13 @@ const Login = () => {
       });
 
       if (success) {
-        toast.success(isSignUp ? "Account created successfully!" : "Login successful!");
+        // Success notification is now handled in the useUserAuth hook
         navigate('/');
       } else {
-        toast.error(isSignUp ? "Failed to create account" : "Invalid credentials");
+        toast.error(isSignUp ? "Failed to create account. Email may already be in use." : "Invalid credentials. Please check your email and try again.");
       }
     } catch (error) {
-      toast.error("An error occurred");
+      toast.error("An error occurred while processing your request. Please try again.");
       console.error(error);
     } finally {
       setIsLoading(false);
