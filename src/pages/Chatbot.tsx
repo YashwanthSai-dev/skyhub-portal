@@ -63,9 +63,9 @@ const Chatbot = () => {
   const getResponseForMessage = (message: string): string => {
     const lowercaseMessage = message.toLowerCase();
 
-    if (lowercaseMessage.includes('hi') && lowercaseMessage.includes('hello')) {
+    if (lowercaseMessage.includes('hi') || lowercaseMessage.includes('hello')) {
       return 'Hello, Welcome to skyhub how can i help you.';
-    } elseif (lowercaseMessage.includes('flight') && lowercaseMessage.includes('status')) {
+    } else if (lowercaseMessage.includes('flight') && lowercaseMessage.includes('status')) {
       return 'You can check flight status on the Schedule page. Would you like me to navigate you there?';
     } else if (lowercaseMessage.includes('check-in')) {
       return 'Our check-in process is simple! You can use the Check-In page from the main menu. Would you like to know more?';
