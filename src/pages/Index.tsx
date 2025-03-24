@@ -71,7 +71,7 @@ const Index = () => {
           
           <div>
             <h2 className="text-lg font-semibold mb-3">Weather Conditions</h2>
-            <WeatherWidget />
+            <WeatherWidget city="Saint Louis" />
           </div>
         </div>
       </div>

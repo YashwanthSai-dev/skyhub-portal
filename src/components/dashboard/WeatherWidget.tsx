@@ -19,7 +19,7 @@ interface WeatherWidgetProps {
   city?: string;
 }
 
-const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city = 'London' }) => {
+const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city = 'Saint Louis' }) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(initialData || null);
   const [loading, setLoading] = useState<boolean>(!initialData);
   const [error, setError] = useState<string | null>(null);
