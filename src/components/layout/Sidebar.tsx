@@ -9,7 +9,8 @@ import {
   CalendarDays, 
   BarChart3, 
   Settings, 
-  LogOut 
+  LogOut,
+  CheckSquare
 } from 'lucide-react';
 import { 
   Sidebar as SidebarComponent,
@@ -66,6 +67,14 @@ const Sidebar = () => {
                 <Link to="/gates">
                   <Clock className="h-4 w-4" />
                   <span>Gate Management</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/check-in">
+                  <CheckSquare className="h-4 w-4" />
+                  <span>Web Check-In</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
