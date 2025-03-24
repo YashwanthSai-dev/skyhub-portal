@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import BreadcrumbNav from '@/components/check-in/BreadcrumbNav';
+import BreadcrumbNav from '@/components/report/BreadcrumbNav';
 
 const Report = () => {
   const [report, setReport] = useState('');
