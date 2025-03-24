@@ -2,6 +2,7 @@
 import React from 'react';
 import { Flight } from '@/data/flightData';
 import CSVUploader from '@/components/CSVUploader';
+import { toast } from 'sonner';
 
 interface AdminTabProps {
   flights: Flight[];
@@ -28,7 +29,10 @@ const AdminTab: React.FC<AdminTabProps> = ({
       </p>
       
       <CSVUploader 
-        onCSVParsed={onCSVUploaded} 
+        onCSVParsed={(data) => {
+          onCSVUploaded(data);
+          toast.success(`Successfully processed ${data.length} flight records`);
+        }}
         parseCSVData={parseCSVData} 
       />
       
@@ -47,22 +51,24 @@ const AdminTab: React.FC<AdminTabProps> = ({
                   <th className="border p-2 text-left">Departure</th>
                   <th className="border p-2 text-left">Booking Ref</th>
                   <th className="border p-2 text-left">Passenger</th>
+                  <th className="border p-2 text-left">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {flights.slice(0, 5).map((flight) => (
+                {flights.slice(0, 10).map((flight) => (
                   <tr key={flight.id} className="hover:bg-gray-50">
                     <td className="border p-2">{flight.flightNumber}</td>
                     <td className="border p-2">{flight.origin} → {flight.destination}</td>
                     <td className="border p-2">{new Date(flight.departureTime).toLocaleString()}</td>
                     <td className="border p-2">{flight.bookingReference}</td>
                     <td className="border p-2">{flight.passengerName}</td>
+                    <td className="border p-2">{flight.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {flights.length > 5 && (
-              <p className="text-sm text-gray-500 mt-2">Showing 5 of {flights.length} records</p>
+            {flights.length > 10 && (
+              <p className="text-sm text-gray-500 mt-2">Showing 10 of {flights.length} records</p>
             )}
           </div>
         ) : (

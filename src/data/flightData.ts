@@ -19,12 +19,25 @@ export const useFlightData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load initial flight data from CSV file
   useEffect(() => {
     const loadFlights = async () => {
       try {
         setLoading(true);
-        // This would normally fetch from an API
-        // For now, we'll use a placeholder until actual CSV is uploaded
+        // Fetch the CSV file from the public directory
+        const response = await fetch('/data/flights.csv');
+        if (!response.ok) {
+          throw new Error('Failed to load flight data CSV');
+        }
+        
+        const csvText = await response.text();
+        const parsedFlights = parseCSVData(csvText);
+        setFlights(parsedFlights);
+      } catch (err) {
+        console.error('Error loading flight data:', err);
+        setError('Failed to load flight data. Using sample data instead.');
+        
+        // Fallback to sample data if CSV loading fails
         setFlights([
           {
             id: '1',
@@ -51,9 +64,6 @@ export const useFlightData = () => {
             status: 'SCHEDULED'
           }
         ]);
-      } catch (err) {
-        setError('Failed to load flight data');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -74,7 +84,7 @@ export const useFlightData = () => {
   };
 
   // Function to parse CSV data when it's uploaded
-  const parseCSVData = (csvText: string) => {
+  const parseCSVData = (csvText: string): Flight[] => {
     try {
       const lines = csvText.split('\n');
       const headers = lines[0].split(',');
@@ -91,29 +101,35 @@ export const useFlightData = () => {
           flight[header.trim()] = values[index]?.trim() || '';
         });
         
-        // Convert to our Flight interface
+        // Convert to our Flight interface and add a unique id if not present
         parsedFlights.push({
-          id: flight.id || String(i),
+          id: flight.id || String(i + Date.now()), // Ensure unique ID
           flightNumber: flight.flightNumber || '',
           origin: flight.origin || '',
           destination: flight.destination || '',
-          departureTime: flight.departureTime || '',
-          arrivalTime: flight.arrivalTime || '',
+          departureTime: flight.departureTime || new Date().toISOString(),
+          arrivalTime: flight.arrivalTime || new Date().toISOString(),
           bookingReference: flight.bookingReference || '',
           passengerName: flight.passengerName || '',
           passengerEmail: flight.passengerEmail || '',
-          status: flight.status || 'SCHEDULED'
+          status: (flight.status as Flight['status']) || 'SCHEDULED'
         });
       }
       
-      setFlights(parsedFlights);
+      console.log(`Parsed ${parsedFlights.length} flights from CSV`);
       return parsedFlights;
     } catch (err) {
-      setError('Failed to parse CSV data');
-      console.error(err);
+      console.error('Error parsing CSV data:', err);
       return [];
     }
   };
 
-  return { flights, loading, error, validateCheckIn, parseCSVData };
+  return { 
+    flights, 
+    setFlights, // Expose this for CSV uploader to update flights
+    loading, 
+    error, 
+    validateCheckIn, 
+    parseCSVData 
+  };
 };

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFlightData } from '@/data/flightData';
@@ -7,13 +7,21 @@ import BreadcrumbNav from '@/components/check-in/BreadcrumbNav';
 import CheckInForm from '@/components/check-in/CheckInForm';
 import FlightSearchTab from '@/components/check-in/FlightSearchTab';
 import AdminTab from '@/components/check-in/AdminTab';
+import { toast } from 'sonner';
 
 const CheckIn = () => {
-  const { flights, loading, error, validateCheckIn, parseCSVData } = useFlightData();
+  const { flights, setFlights, loading, error, validateCheckIn, parseCSVData } = useFlightData();
+
+  useEffect(() => {
+    if (flights.length > 0 && !loading && !error) {
+      console.log(`Loaded ${flights.length} flights from CSV file`);
+      toast.success(`Loaded ${flights.length} flights from database`);
+    }
+  }, [flights, loading, error]);
 
   const handleCSVUploaded = (data: any[]) => {
     console.log("Uploaded flight data:", data);
-    // The data is already set in the useFlightData hook
+    setFlights(data);
   };
 
   return (
