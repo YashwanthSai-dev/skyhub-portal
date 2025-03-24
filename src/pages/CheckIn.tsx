@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFlightData, Flight } from '@/data/flightData';
 import CSVUploader from '@/components/CSVUploader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import FlightSearch from '@/components/dashboard/FlightSearch';
 
 const CheckIn = () => {
   const [bookingReference, setBookingReference] = useState('');
@@ -66,6 +67,7 @@ const CheckIn = () => {
           <Tabs defaultValue="check-in" className="max-w-4xl">
             <TabsList className="mb-6">
               <TabsTrigger value="check-in">Passenger Check-in</TabsTrigger>
+              <TabsTrigger value="search">Flight Search</TabsTrigger>
               <TabsTrigger value="admin">Admin: Upload Flight Data</TabsTrigger>
             </TabsList>
             
@@ -141,6 +143,17 @@ const CheckIn = () => {
                     <p className="mt-4 text-green-700">Your boarding pass has been sent to {checkedInFlight.passengerEmail}</p>
                   </div>
                 )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="search">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold mb-4">Flight Search</h2>
+                <p className="text-lg mb-6">
+                  Search for flight information by flight number, route, passenger name, or booking reference.
+                </p>
+                
+                <FlightSearch flights={flights} />
               </div>
             </TabsContent>
 

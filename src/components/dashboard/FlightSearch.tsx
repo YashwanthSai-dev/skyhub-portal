@@ -7,65 +7,15 @@ import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/
 import { useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { Flight } from '@/data/flightData';
 
-interface FlightSearchResult {
-  id: string;
-  flightNumber: string;
-  airline: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  price: string;
-  emptySeats: number;
+interface FlightSearchProps {
+  flights?: Flight[];
 }
 
-const FlightSearch = () => {
-  const [searchResults, setSearchResults] = useState<FlightSearchResult[]>([]);
+const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
+  const [searchResults, setSearchResults] = useState<Flight[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Mock flight data
-  const mockFlights: FlightSearchResult[] = [
-    {
-      id: "fs1",
-      flightNumber: "SQ802",
-      airline: "Singapore Airlines",
-      origin: "Singapore",
-      destination: "Tokyo",
-      departureTime: "10:30 AM",
-      price: "$450",
-      emptySeats: 42
-    },
-    {
-      id: "fs2",
-      flightNumber: "EK432",
-      airline: "Emirates",
-      destination: "Dubai",
-      origin: "Singapore",
-      departureTime: "11:15 AM",
-      price: "$680",
-      emptySeats: 23
-    },
-    {
-      id: "fs3",
-      flightNumber: "QF8",
-      airline: "Qantas",
-      destination: "Sydney",
-      origin: "Singapore",
-      departureTime: "12:00 PM",
-      price: "$520",
-      emptySeats: 15
-    },
-    {
-      id: "fs4",
-      flightNumber: "CX759",
-      airline: "Cathay Pacific",
-      origin: "Hong Kong",
-      destination: "Singapore",
-      departureTime: "09:45 AM",
-      price: "$380",
-      emptySeats: 8
-    }
-  ];
 
   const form = useForm({
     defaultValues: {
@@ -76,15 +26,16 @@ const FlightSearch = () => {
   const onSubmit = (data: { searchQuery: string }) => {
     setIsSearching(true);
     
-    // Simulate API call with setTimeout
+    // Perform search on actual flight data
     setTimeout(() => {
       const query = data.searchQuery.toLowerCase();
-      const results = mockFlights.filter(
+      const results = flights.filter(
         flight => 
           flight.flightNumber.toLowerCase().includes(query) ||
-          flight.airline.toLowerCase().includes(query) ||
           flight.origin.toLowerCase().includes(query) ||
-          flight.destination.toLowerCase().includes(query)
+          flight.destination.toLowerCase().includes(query) ||
+          flight.passengerName.toLowerCase().includes(query) ||
+          flight.bookingReference.toLowerCase().includes(query)
       );
       
       setSearchResults(results);
@@ -106,7 +57,7 @@ const FlightSearch = () => {
                 <div className="flex space-x-2">
                   <FormControl>
                     <Input 
-                      placeholder="Search by flight number, airline, origin or destination..." 
+                      placeholder="Search by flight number, origin, destination, or passenger..." 
                       {...field} 
                     />
                   </FormControl>
@@ -132,8 +83,8 @@ const FlightSearch = () => {
                     <th className="px-4 py-3 text-left font-medium">Flight</th>
                     <th className="px-4 py-3 text-left font-medium">Route</th>
                     <th className="px-4 py-3 text-left font-medium">Departure</th>
-                    <th className="px-4 py-3 text-left font-medium">Price</th>
-                    <th className="px-4 py-3 text-left font-medium">Empty Seats</th>
+                    <th className="px-4 py-3 text-left font-medium">Passenger</th>
+                    <th className="px-4 py-3 text-left font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -142,7 +93,7 @@ const FlightSearch = () => {
                       <td className="px-4 py-3">
                         <div>
                           <div className="font-medium">{flight.flightNumber}</div>
-                          <div className="text-gray-500 text-xs">{flight.airline}</div>
+                          <div className="text-gray-500 text-xs">{flight.bookingReference}</div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -152,16 +103,16 @@ const FlightSearch = () => {
                           <span>{flight.destination}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">{flight.departureTime}</td>
-                      <td className="px-4 py-3 font-medium">{flight.price}</td>
+                      <td className="px-4 py-3">{new Date(flight.departureTime).toLocaleString()}</td>
+                      <td className="px-4 py-3">{flight.passengerName}</td>
                       <td className="px-4 py-3">
                         <span className={cn(
                           "px-2 py-1 rounded-full text-xs",
-                          flight.emptySeats < 10 ? "bg-red-100 text-red-800" : 
-                          flight.emptySeats < 30 ? "bg-amber-100 text-amber-800" : 
+                          flight.status === 'CANCELLED' ? "bg-red-100 text-red-800" : 
+                          flight.status === 'BOARDING' ? "bg-amber-100 text-amber-800" : 
                           "bg-green-100 text-green-800"
                         )}>
-                          {flight.emptySeats} seats
+                          {flight.status}
                         </span>
                       </td>
                     </tr>
