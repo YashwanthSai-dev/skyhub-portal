@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import FlightSearch from '@/components/dashboard/FlightSearch';
@@ -6,16 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plane, MessageCircle, CalendarDays, TrendingUp, CheckSquare, BarChart3 } from 'lucide-react';
 
 const Index = () => {
-  // Weather data remains the same
-  const weatherData = {
-    temperature: 29,
-    condition: "cloudy" as const,
-    windSpeed: 12,
-    windDirection: "NE",
-    humidity: 78,
-    visibility: "10 km"
-  };
-
   return (
     <Layout>
       <div className="space-y-6">
@@ -80,7 +71,7 @@ const Index = () => {
           
           <div>
             <h2 className="text-lg font-semibold mb-3">Weather Conditions</h2>
-            <WeatherWidget data={weatherData} />
+            <WeatherWidget />
           </div>
         </div>
       </div>
