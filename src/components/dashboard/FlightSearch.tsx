@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plane } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Flight } from '@/data/flightData';
+import { toast } from 'sonner';
 
 interface FlightSearchProps {
   flights?: Flight[];
@@ -23,22 +24,47 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
     },
   });
 
+  useEffect(() => {
+    // Log the incoming flights data for debugging
+    console.log(`FlightSearch component received ${flights?.length || 0} flights`);
+  }, [flights]);
+
   const onSubmit = (data: { searchQuery: string }) => {
     setIsSearching(true);
+    const query = data.searchQuery.toLowerCase().trim();
     
-    // Perform search on actual flight data
+    if (!query) {
+      toast.warning("Please enter a search term");
+      setIsSearching(false);
+      return;
+    }
+
+    if (!flights || flights.length === 0) {
+      toast.error("No flight data available. Please ensure dataset.py has been run.");
+      setIsSearching(false);
+      return;
+    }
+
+    // Log the search query and available flights for debugging
+    console.log(`Searching for: "${query}" among ${flights.length} flights`);
+    
     setTimeout(() => {
-      const query = data.searchQuery.toLowerCase();
       const results = flights.filter(
         flight => 
-          flight.flightNumber.toLowerCase().includes(query) ||
-          flight.origin.toLowerCase().includes(query) ||
-          flight.destination.toLowerCase().includes(query) ||
-          flight.passengerName.toLowerCase().includes(query) ||
-          flight.bookingReference.toLowerCase().includes(query)
+          (flight.flightNumber && flight.flightNumber.toLowerCase().includes(query)) ||
+          (flight.origin && flight.origin.toLowerCase().includes(query)) ||
+          (flight.destination && flight.destination.toLowerCase().includes(query)) ||
+          (flight.passengerName && flight.passengerName.toLowerCase().includes(query)) ||
+          (flight.bookingReference && flight.bookingReference.toLowerCase().includes(query))
       );
       
+      console.log(`Search results: ${results.length} flights found`);
       setSearchResults(results);
+      
+      if (results.length === 0) {
+        toast.info("No flights found matching your search criteria");
+      }
+      
       setIsSearching(false);
     }, 500);
   };
@@ -46,6 +72,14 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
   return (
     <div className="bg-white rounded-lg border p-4 space-y-4">
       <h2 className="text-lg font-semibold">Search Flights</h2>
+      
+      {flights.length === 0 && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4">
+          <p className="text-amber-800">
+            No flight data available. Please make sure you've run the dataset.py script to generate the flight database.
+          </p>
+        </div>
+      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
