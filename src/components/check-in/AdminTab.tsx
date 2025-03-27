@@ -23,9 +23,9 @@ const AdminTab: React.FC<AdminTabProps> = ({
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Upload Flight Data</h2>
       <p className="text-lg mb-6">
-        Upload a CSV file containing flight and passenger information. The CSV should include columns for 
-        flightNumber, origin, destination, departureTime, arrivalTime, bookingReference, passengerName, 
-        passengerEmail, and status.
+        Upload a CSV file containing flight and passenger information. The data will be stored in our SQLite database.
+        The CSV should include columns for flightNumber, origin, destination, departureTime, arrivalTime, 
+        bookingReference, passengerName, passengerEmail, and status.
       </p>
       
       <CSVUploader 
