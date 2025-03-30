@@ -8,9 +8,11 @@ import CheckInForm from '@/components/check-in/CheckInForm';
 import FlightSearchTab from '@/components/check-in/FlightSearchTab';
 import AdminTab from '@/components/check-in/AdminTab';
 import { toast } from 'sonner';
+import { useUserAuth } from '@/hooks/useUserAuth';
 
 const CheckIn = () => {
-  const { flights, setFlights, loading, error, validateCheckIn, parseCSVData } = useFlightData();
+  const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
+  const { isEmployee } = useUserAuth();
 
   useEffect(() => {
     if (flights.length > 0 && !loading && !error) {
@@ -36,26 +38,30 @@ const CheckIn = () => {
             <TabsList className="mb-6">
               <TabsTrigger value="check-in">Passenger Check-in</TabsTrigger>
               <TabsTrigger value="search">Flight Search</TabsTrigger>
-              <TabsTrigger value="admin">Admin: Upload Flight Data</TabsTrigger>
+              {isEmployee && (
+                <TabsTrigger value="admin">Admin: Upload Flight Data</TabsTrigger>
+              )}
             </TabsList>
             
             <TabsContent value="check-in">
-              <CheckInForm validateCheckIn={validateCheckIn} />
+              <CheckInForm validateCheckIn={validateCheckIn} performCheckIn={performCheckIn} />
             </TabsContent>
 
             <TabsContent value="search">
               <FlightSearchTab flights={flights} />
             </TabsContent>
 
-            <TabsContent value="admin">
-              <AdminTab 
-                flights={flights} 
-                loading={loading} 
-                error={error} 
-                parseCSVData={parseCSVData} 
-                onCSVUploaded={handleCSVUploaded} 
-              />
-            </TabsContent>
+            {isEmployee && (
+              <TabsContent value="admin">
+                <AdminTab 
+                  flights={flights} 
+                  loading={loading} 
+                  error={error} 
+                  parseCSVData={parseCSVData} 
+                  onCSVUploaded={handleCSVUploaded} 
+                />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>

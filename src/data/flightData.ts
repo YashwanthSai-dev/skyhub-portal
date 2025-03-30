@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 export interface Flight {
@@ -12,9 +11,29 @@ export interface Flight {
   passengerName: string;
   passengerEmail: string;
   status: 'SCHEDULED' | 'BOARDING' | 'DEPARTED' | 'ARRIVED' | 'CANCELLED';
+  checkedInPassengers?: CheckedInPassenger[];
+  date?: string;
 }
 
-// Mock flight data that will be available immediately without needing external files
+export interface CheckedInPassenger {
+  id: string;
+  name: string;
+  email: string;
+  seatNumber?: string;
+  checkInTime: string;
+}
+
+export interface BookingDetails {
+  id: string;
+  flightId: string;
+  passengerName: string;
+  passengerEmail: string;
+  bookingReference: string;
+  seatNumber?: string;
+  hasCheckedIn: boolean;
+  checkInTime?: string;
+}
+
 const mockFlights: Flight[] = [
   {
     id: "1",
@@ -26,7 +45,8 @@ const mockFlights: Flight[] = [
     bookingReference: "ABC123",
     passengerName: "John Smith",
     passengerEmail: "john@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: []
   },
   {
     id: "2",
@@ -38,7 +58,8 @@ const mockFlights: Flight[] = [
     bookingReference: "DEF456",
     passengerName: "Jane Doe",
     passengerEmail: "jane@example.com",
-    status: "BOARDING"
+    status: "BOARDING",
+    checkedInPassengers: []
   },
   {
     id: "3",
@@ -50,7 +71,8 @@ const mockFlights: Flight[] = [
     bookingReference: "GHI789",
     passengerName: "Robert Johnson",
     passengerEmail: "robert@example.com",
-    status: "DEPARTED"
+    status: "DEPARTED",
+    checkedInPassengers: []
   },
   {
     id: "4",
@@ -62,7 +84,8 @@ const mockFlights: Flight[] = [
     bookingReference: "JKL012",
     passengerName: "Sarah Williams",
     passengerEmail: "sarah@example.com",
-    status: "ARRIVED"
+    status: "ARRIVED",
+    checkedInPassengers: []
   },
   {
     id: "5",
@@ -74,7 +97,8 @@ const mockFlights: Flight[] = [
     bookingReference: "MNO345",
     passengerName: "Michael Brown",
     passengerEmail: "michael@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: []
   },
   {
     id: "6",
@@ -162,20 +186,83 @@ const mockFlights: Flight[] = [
   }
 ];
 
+const mockBookings: BookingDetails[] = [
+  {
+    id: "b1",
+    flightId: "1",
+    passengerName: "John Smith",
+    passengerEmail: "john@example.com",
+    bookingReference: "ABC123",
+    seatNumber: "12A",
+    hasCheckedIn: false
+  },
+  {
+    id: "b2",
+    flightId: "1",
+    passengerName: "Alice Johnson",
+    passengerEmail: "alice@example.com",
+    bookingReference: "ABC124",
+    seatNumber: "12B",
+    hasCheckedIn: true,
+    checkInTime: new Date().toISOString()
+  },
+  {
+    id: "b3",
+    flightId: "2",
+    passengerName: "Jane Doe",
+    passengerEmail: "jane@example.com",
+    bookingReference: "DEF456",
+    seatNumber: "14C",
+    hasCheckedIn: false
+  },
+  {
+    id: "b4",
+    flightId: "3",
+    passengerName: "Robert Johnson",
+    passengerEmail: "robert@example.com",
+    bookingReference: "GHI789",
+    seatNumber: "8D",
+    hasCheckedIn: true,
+    checkInTime: new Date().toISOString()
+  }
+];
+
+const saveToLocalStorage = (key: string, data: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error saving to localStorage (${key}):`, error);
+  }
+};
+
+const loadFromLocalStorage = <T>(key: string, defaultData: T): T => {
+  try {
+    const storedData = localStorage.getItem(key);
+    return storedData ? JSON.parse(storedData) : defaultData;
+  } catch (error) {
+    console.error(`Error loading from localStorage (${key}):`, error);
+    return defaultData;
+  }
+};
+
 export const useFlightData = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
+  const [bookings, setBookings] = useState<BookingDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load mock flight data with a slight delay to simulate loading
   useEffect(() => {
     const loadFlights = async () => {
       try {
         setLoading(true);
-        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 800));
-        console.log('Loading mock flight data:', mockFlights.length, 'flights');
-        setFlights(mockFlights);
+        
+        const storedFlights = loadFromLocalStorage<Flight[]>('skyHubFlights', mockFlights);
+        const storedBookings = loadFromLocalStorage<BookingDetails[]>('skyHubBookings', mockBookings);
+        
+        console.log('Loading flight data:', storedFlights.length, 'flights');
+        setFlights(storedFlights);
+        setBookings(storedBookings);
       } catch (err) {
         console.error('Error loading flight data:', err);
         setError('Failed to load flight data.');
@@ -187,7 +274,18 @@ export const useFlightData = () => {
     loadFlights();
   }, []);
 
-  // Function to validate a check-in request
+  useEffect(() => {
+    if (flights.length > 0 && !loading) {
+      saveToLocalStorage('skyHubFlights', flights);
+    }
+  }, [flights, loading]);
+
+  useEffect(() => {
+    if (bookings.length > 0 && !loading) {
+      saveToLocalStorage('skyHubBookings', bookings);
+    }
+  }, [bookings, loading]);
+
   const validateCheckIn = (bookingRef: string, emailOrName: string): Flight | null => {
     const flight = flights.find(f => 
       f.bookingReference.toLowerCase() === bookingRef.toLowerCase() && 
@@ -198,11 +296,92 @@ export const useFlightData = () => {
     return flight || null;
   };
 
-  // Function to parse CSV data is kept but modified to handle direct data
+  const performCheckIn = (bookingRef: string, emailOrName: string): { success: boolean, flight: Flight | null } => {
+    const bookingIndex = bookings.findIndex(b => 
+      b.bookingReference.toLowerCase() === bookingRef.toLowerCase() && 
+      (b.passengerEmail.toLowerCase() === emailOrName.toLowerCase() || 
+       b.passengerName.toLowerCase().includes(emailOrName.toLowerCase()))
+    );
+    
+    if (bookingIndex === -1) {
+      return { success: false, flight: null };
+    }
+    
+    const booking = bookings[bookingIndex];
+    const flightIndex = flights.findIndex(f => f.id === booking.flightId);
+    
+    if (flightIndex === -1) {
+      return { success: false, flight: null };
+    }
+    
+    if (booking.hasCheckedIn) {
+      return { success: true, flight: flights[flightIndex] };
+    }
+    
+    const updatedBooking = {
+      ...booking,
+      hasCheckedIn: true,
+      checkInTime: new Date().toISOString()
+    };
+    
+    const updatedFlight = { ...flights[flightIndex] };
+    if (!updatedFlight.checkedInPassengers) {
+      updatedFlight.checkedInPassengers = [];
+    }
+    
+    updatedFlight.checkedInPassengers.push({
+      id: updatedBooking.id,
+      name: updatedBooking.passengerName,
+      email: updatedBooking.passengerEmail,
+      seatNumber: updatedBooking.seatNumber,
+      checkInTime: updatedBooking.checkInTime!
+    });
+    
+    const newBookings = [...bookings];
+    newBookings[bookingIndex] = updatedBooking;
+    setBookings(newBookings);
+    
+    const newFlights = [...flights];
+    newFlights[flightIndex] = updatedFlight;
+    setFlights(newFlights);
+    
+    return { success: true, flight: updatedFlight };
+  };
+
+  const addFlight = (flight: Omit<Flight, 'id'>): Flight => {
+    const newFlight: Flight = {
+      ...flight,
+      id: `f${Date.now()}`,
+      checkedInPassengers: []
+    };
+    
+    setFlights(prev => [...prev, newFlight]);
+    return newFlight;
+  };
+  
+  const updateFlight = (id: string, flightData: Partial<Flight>): boolean => {
+    const index = flights.findIndex(f => f.id === id);
+    if (index === -1) return false;
+    
+    const updatedFlights = [...flights];
+    updatedFlights[index] = { ...updatedFlights[index], ...flightData };
+    setFlights(updatedFlights);
+    return true;
+  };
+  
+  const addBooking = (booking: Omit<BookingDetails, 'id'>): BookingDetails => {
+    const newBooking: BookingDetails = {
+      ...booking,
+      id: `b${Date.now()}`,
+      hasCheckedIn: false
+    };
+    
+    setBookings(prev => [...prev, newBooking]);
+    return newBooking;
+  };
+
   const parseCSVData = (csvText: string): Flight[] => {
     try {
-      // If CSV parsing is needed, we can still support it
-      // But for now, return the mock flights if the CSV is empty
       if (!csvText.trim()) {
         console.log('No CSV provided, using mock data');
         return mockFlights;
@@ -228,9 +407,8 @@ export const useFlightData = () => {
           flight[header.trim()] = values[index]?.trim() || '';
         });
         
-        // Convert to our Flight interface and add a unique id if not present
         parsedFlights.push({
-          id: flight.id || String(i + Date.now()), // Ensure unique ID
+          id: flight.id || String(i + Date.now()),
           flightNumber: flight.flightNumber || '',
           origin: flight.origin || '',
           destination: flight.destination || '',
@@ -239,7 +417,9 @@ export const useFlightData = () => {
           bookingReference: flight.bookingReference || '',
           passengerName: flight.passengerName || '',
           passengerEmail: flight.passengerEmail || '',
-          status: (flight.status as Flight['status']) || 'SCHEDULED'
+          status: (flight.status as Flight['status']) || 'SCHEDULED',
+          checkedInPassengers: [],
+          date: flight.date || ''
         });
       }
       
@@ -247,16 +427,22 @@ export const useFlightData = () => {
       return parsedFlights;
     } catch (err) {
       console.error('Error parsing CSV data:', err);
-      return mockFlights; // Fall back to mock data on error
+      return mockFlights;
     }
   };
 
   return { 
     flights, 
-    setFlights, // Expose this for CSV uploader to update flights
+    setFlights,
+    bookings,
+    setBookings,
     loading, 
     error, 
-    validateCheckIn, 
+    validateCheckIn,
+    performCheckIn,
+    addFlight,
+    updateFlight,
+    addBooking,
     parseCSVData 
   };
 };

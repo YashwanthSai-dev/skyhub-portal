@@ -2,11 +2,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-interface User {
+export type UserRole = 'passenger' | 'employee' | 'admin';
+
+export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'user' | 'admin';
+  role: UserRole;
 }
 
 interface LoginParams {
@@ -14,12 +16,15 @@ interface LoginParams {
   password: string;
   name?: string;
   isSignUp?: boolean;
+  role?: UserRole;
 }
 
 interface UserContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isEmployee: boolean;
+  isAdmin: boolean;
   login: (params: LoginParams) => Promise<boolean>;
   logout: () => void;
 }
@@ -44,7 +49,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsLoading(false);
   }, []);
 
-  const login = async ({ email, password, name, isSignUp }: LoginParams): Promise<boolean> => {
+  const login = async ({ email, password, name, isSignUp, role = 'passenger' }: LoginParams): Promise<boolean> => {
     // For demonstration: simulate a login/signup process
     // In a real app, this would call an API endpoint
     
@@ -57,7 +62,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         id: Math.random().toString(36).substring(2),
         name: name || email.split('@')[0],
         email,
-        role: 'user',
+        role,
       };
       
       // In a real app, we'd send this to a backend API
@@ -97,8 +102,22 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     toast.info('You have been logged out.');
   };
 
+  // Helper properties for role checking
+  const isEmployee = user?.role === 'employee' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
+
   return (
-    <UserContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <UserContext.Provider 
+      value={{ 
+        user, 
+        isAuthenticated: !!user, 
+        isLoading,
+        isEmployee,
+        isAdmin, 
+        login, 
+        logout 
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

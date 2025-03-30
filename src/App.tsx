@@ -13,6 +13,8 @@ import Report from "./pages/Report";
 import FlightPricePrediction from "./pages/FlightPricePrediction";
 import Chatbot from "./pages/Chatbot";
 import Login from "./pages/Login";
+import Booking from "./pages/Booking";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/check-in" element={<CheckIn />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/employee" element={<EmployeeDashboard />} />
             <Route path="/report" element={<Report />} />
             <Route path="/reports" element={<Navigate to="/report" replace />} />
             <Route path="/price-prediction" element={<FlightPricePrediction />} />

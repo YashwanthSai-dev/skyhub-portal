@@ -4,22 +4,25 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Flight } from '@/data/flightData';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 interface CheckInFormProps {
   validateCheckIn: (bookingReference: string, emailOrName: string) => Flight | null;
+  performCheckIn?: (bookingReference: string, emailOrName: string) => { success: boolean, flight: Flight | null };
 }
 
-const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn }) => {
+const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheckIn }) => {
   const [bookingReference, setBookingReference] = useState('');
   const [emailOrName, setEmailOrName] = useState('');
   const [checkedInFlight, setCheckedInFlight] = useState<Flight | null>(null);
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!bookingReference || !emailOrName) {
-      toast({
+      uiToast({
         title: "Error",
         description: "Please fill in all fields",
         variant: "destructive",
@@ -27,20 +30,32 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn }) => {
       return;
     }
 
-    const flight = validateCheckIn(bookingReference, emailOrName);
-    
-    if (flight) {
-      setCheckedInFlight(flight);
-      toast({
-        title: "Check-in Successful",
-        description: `Your boarding pass for flight ${flight.flightNumber} has been sent to your email`,
-      });
+    // If performCheckIn is available, use it for actual check-in
+    if (performCheckIn) {
+      const result = performCheckIn(bookingReference, emailOrName);
+      if (result.success && result.flight) {
+        setCheckedInFlight(result.flight);
+        toast.success("Check-in successful! Your boarding pass has been sent to your email.");
+      } else {
+        toast.error("Check-in failed. Please check your booking reference and email/name.");
+      }
     } else {
-      toast({
-        title: "Check-in Failed",
-        description: "No matching flight found. Please check your booking reference and email/name.",
-        variant: "destructive",
-      });
+      // Fall back to just validation if performCheckIn isn't available
+      const flight = validateCheckIn(bookingReference, emailOrName);
+      
+      if (flight) {
+        setCheckedInFlight(flight);
+        uiToast({
+          title: "Check-in Successful",
+          description: `Your boarding pass for flight ${flight.flightNumber} has been sent to your email`,
+        });
+      } else {
+        uiToast({
+          title: "Check-in Failed",
+          description: "No matching flight found. Please check your booking reference and email/name.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -104,7 +119,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn }) => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Departure</p>
-              <p className="text-lg font-medium">{new Date(checkedInFlight.departureTime).toLocaleString()}</p>
+              <p className="text-lg font-medium">{format(new Date(checkedInFlight.departureTime), "MMM d, h:mm a")}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Passenger</p>
