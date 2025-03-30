@@ -49,7 +49,7 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
     }
 
     if (!flights || flights.length === 0) {
-      toast.error("No flight data available. Please ensure dataset.py has been run.");
+      toast.error("No flight data available");
       setIsSearching(false);
       return;
     }
@@ -58,26 +58,34 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
     console.log(`Searching for: "${query}" among ${flights.length} flights`);
     
     setTimeout(() => {
+      // Debug logging for search
+      console.log("Flight data for search:", flights.map(f => ({
+        id: f.id,
+        flightNumber: f.flightNumber,
+        origin: f.origin,
+        destination: f.destination
+      })));
+      
       // More flexible search that handles case insensitivity and partial matches
       const results = flights.filter(flight => {
-        // Convert all values to lowercase and trim for consistent comparison
         const flightNumber = flight.flightNumber?.toLowerCase().trim() || '';
         const origin = flight.origin?.toLowerCase().trim() || '';
         const destination = flight.destination?.toLowerCase().trim() || '';
         const passengerName = flight.passengerName?.toLowerCase().trim() || '';
         const bookingReference = flight.bookingReference?.toLowerCase().trim() || '';
         
-        // Debug output for first few flights to verify data
-        if (flightNumber.includes('sh') || flightNumber === 'sh101') {
-          console.log(`Comparing flight: ${flight.flightNumber}, query: ${query}`);
+        // Log individual search comparisons for debugging
+        const matches = flightNumber.includes(query) ||
+                   origin.includes(query) ||
+                   destination.includes(query) || 
+                   passengerName.includes(query) || 
+                   bookingReference.includes(query);
+        
+        if (query === "sh101" || query === "sh" || query.includes("101")) {
+          console.log(`Checking flight: ${flight.flightNumber} (${flightNumber}) against "${query}": ${matches}`);
         }
         
-        // Return true if any field contains the search query
-        return flightNumber.includes(query) ||
-               origin.includes(query) ||
-               destination.includes(query) || 
-               passengerName.includes(query) || 
-               bookingReference.includes(query);
+        return matches;
       });
       
       console.log(`Search results: ${results.length} flights found`);
@@ -104,16 +112,14 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
       
       {error && (
         <Alert variant="destructive">
-          <AlertDescription>
-            {error}. Please make sure you've run the dataset.py script to generate the flight database.
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
       
       {!loading && !error && flights.length === 0 && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4">
           <p className="text-amber-800">
-            No flight data available. Please make sure you've run the dataset.py script to generate the flight database.
+            No flight data available
           </p>
         </div>
       )}
@@ -156,7 +162,7 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
         </form>
       </Form>
 
-      {!loading && flights.length > 0 && searchResults.length === 0 && !isSearching && (
+      {!loading && flights.length > 0 && searchResults.length === 0 && !isSearching && form.getValues().searchQuery === '' && (
         <div className="p-4 bg-blue-50 border border-blue-100 rounded-md">
           <div className="flex items-center">
             <Plane className="h-5 w-5 text-blue-500 mr-2" />
@@ -214,7 +220,9 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
                           "px-2 py-1 rounded-full text-xs",
                           flight.status === 'CANCELLED' ? "bg-red-100 text-red-800" : 
                           flight.status === 'BOARDING' ? "bg-amber-100 text-amber-800" : 
-                          "bg-green-100 text-green-800"
+                          flight.status === 'DEPARTED' ? "bg-blue-100 text-blue-800" :
+                          flight.status === 'ARRIVED' ? "bg-green-100 text-green-800" :
+                          "bg-purple-100 text-purple-800"
                         )}>
                           {flight.status}
                         </span>
