@@ -1,13 +1,16 @@
-
 import sqlite3
 import csv
 import os
 import json
 from pathlib import Path
 
+# Ensure verbose logging
+print("Starting dataset generation script...")
+
 # Ensure the data directory exists
 data_dir = Path("public/data")
 data_dir.mkdir(parents=True, exist_ok=True)
+print(f"Ensuring data directory exists: {data_dir.absolute()}")
 
 # Create or connect to the SQLite database
 conn = sqlite3.connect('public/data/dataset.db')
@@ -114,4 +117,9 @@ print(f"Created users.json with {len(users)} records")
 # Commit changes and close connection
 conn.commit()
 print("Database successfully created at public/data/dataset.db")
+print(f"Database created at: {data_dir / 'dataset.db'}")
+print(f"CSV file created at: {data_dir / 'flights.csv'}")
+print(f"Users JSON created at: {data_dir / 'users.json'}")
+print("Dataset generation completed successfully!")
+
 conn.close()
