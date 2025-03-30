@@ -9,31 +9,30 @@ import { toast } from 'sonner';
 import { useUserAuth } from '@/hooks/useUserAuth';
 
 interface CheckInFormProps {
-  validateCheckIn: (bookingReference: string, emailOrName: string) => Flight | null;
-  performCheckIn?: (bookingReference: string, emailOrName: string) => { success: boolean, flight: Flight | null };
+  validateCheckIn: (passengerName: string) => Flight | null;
+  performCheckIn?: (passengerName: string) => { success: boolean, flight: Flight | null };
 }
 
 const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheckIn }) => {
-  const [bookingReference, setBookingReference] = useState('');
-  const [emailOrName, setEmailOrName] = useState('');
+  const [passengerName, setPassengerName] = useState('');
   const [checkedInFlight, setCheckedInFlight] = useState<Flight | null>(null);
   const { toast: uiToast } = useToast();
   const { user } = useUserAuth();
 
-  // Pre-fill the name/email field if the user is logged in
+  // Pre-fill the name field if the user is logged in
   useEffect(() => {
     if (user) {
-      setEmailOrName(user.name || user.email || '');
+      setPassengerName(user.name || '');
     }
   }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!bookingReference || !emailOrName) {
+    if (!passengerName) {
       uiToast({
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please enter your name",
         variant: "destructive",
       });
       return;
@@ -41,17 +40,17 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
 
     // If performCheckIn is available, use it for actual check-in
     if (performCheckIn) {
-      const result = performCheckIn(bookingReference, emailOrName);
+      const result = performCheckIn(passengerName);
       if (result.success && result.flight) {
         setCheckedInFlight(result.flight);
         toast.success("Check-in successful! Your boarding pass has been sent to your email.");
-        console.log("Check-in completed for:", emailOrName, "on flight:", result.flight.flightNumber);
+        console.log("Check-in completed for:", passengerName, "on flight:", result.flight.flightNumber);
       } else {
-        toast.error("Check-in failed. Please check your booking reference and email/name.");
+        toast.error("Check-in failed. Please check your name.");
       }
     } else {
       // Fall back to just validation if performCheckIn isn't available
-      const flight = validateCheckIn(bookingReference, emailOrName);
+      const flight = validateCheckIn(passengerName);
       
       if (flight) {
         setCheckedInFlight(flight);
@@ -59,11 +58,11 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
           title: "Check-in Successful",
           description: `Your boarding pass for flight ${flight.flightNumber} has been sent to your email`,
         });
-        console.log("Check-in validated for:", emailOrName, "on flight:", flight.flightNumber);
+        console.log("Check-in validated for:", passengerName, "on flight:", flight.flightNumber);
       } else {
         uiToast({
           title: "Check-in Failed",
-          description: "No matching flight found. Please check your booking reference and email/name.",
+          description: "No matching flight found for your name.",
           variant: "destructive",
         });
       }
@@ -87,23 +86,13 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
 
       <div className="mt-10 bg-transparent shadow-none border-none">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Input
-                placeholder="PNR/Booking Reference"
-                value={bookingReference}
-                onChange={(e) => setBookingReference(e.target.value)}
-                className="h-14 text-lg bg-white"
-              />
-            </div>
-            <div>
-              <Input
-                placeholder="Email/Last Name"
-                value={emailOrName}
-                onChange={(e) => setEmailOrName(e.target.value)}
-                className="h-14 text-lg bg-white"
-              />
-            </div>
+          <div>
+            <Input
+              placeholder="Enter Your Full Name"
+              value={passengerName}
+              onChange={(e) => setPassengerName(e.target.value)}
+              className="h-14 text-lg bg-white"
+            />
           </div>
           <div className="flex justify-end">
             <Button 

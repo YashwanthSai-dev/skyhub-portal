@@ -286,21 +286,17 @@ export const useFlightData = () => {
     }
   }, [bookings, loading]);
 
-  const validateCheckIn = (bookingRef: string, emailOrName: string): Flight | null => {
+  const validateCheckIn = (passengerName: string): Flight | null => {
     const flight = flights.find(f => 
-      f.bookingReference.toLowerCase() === bookingRef.toLowerCase() && 
-      (f.passengerEmail.toLowerCase() === emailOrName.toLowerCase() || 
-       f.passengerName.toLowerCase().includes(emailOrName.toLowerCase()))
+      f.passengerName.toLowerCase() === passengerName.toLowerCase()
     );
     
     return flight || null;
   };
 
-  const performCheckIn = (bookingRef: string, emailOrName: string): { success: boolean, flight: Flight | null } => {
+  const performCheckIn = (passengerName: string): { success: boolean, flight: Flight | null } => {
     const bookingIndex = bookings.findIndex(b => 
-      b.bookingReference.toLowerCase() === bookingRef.toLowerCase() && 
-      (b.passengerEmail.toLowerCase() === emailOrName.toLowerCase() || 
-       b.passengerName.toLowerCase().includes(emailOrName.toLowerCase()))
+      b.passengerName.toLowerCase() === passengerName.toLowerCase()
     );
     
     if (bookingIndex === -1) {
