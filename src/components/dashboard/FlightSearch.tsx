@@ -33,6 +33,9 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
   useEffect(() => {
     // Log the incoming flights data for debugging
     console.log(`FlightSearch component received ${flights?.length || 0} flights`);
+    if (flights && flights.length > 0) {
+      console.log("Sample flight data:", flights[0]);
+    }
   }, [flights]);
 
   const onSubmit = (data: { searchQuery: string }) => {
@@ -55,14 +58,27 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
     console.log(`Searching for: "${query}" among ${flights.length} flights`);
     
     setTimeout(() => {
-      const results = flights.filter(
-        flight => 
-          (flight.flightNumber && flight.flightNumber.toLowerCase().includes(query)) ||
-          (flight.origin && flight.origin.toLowerCase().includes(query)) ||
-          (flight.destination && flight.destination.toLowerCase().includes(query)) ||
-          (flight.passengerName && flight.passengerName.toLowerCase().includes(query)) ||
-          (flight.bookingReference && flight.bookingReference.toLowerCase().includes(query))
-      );
+      // More flexible search that handles case insensitivity and partial matches
+      const results = flights.filter(flight => {
+        // Convert all values to lowercase and trim for consistent comparison
+        const flightNumber = flight.flightNumber?.toLowerCase().trim() || '';
+        const origin = flight.origin?.toLowerCase().trim() || '';
+        const destination = flight.destination?.toLowerCase().trim() || '';
+        const passengerName = flight.passengerName?.toLowerCase().trim() || '';
+        const bookingReference = flight.bookingReference?.toLowerCase().trim() || '';
+        
+        // Debug output for first few flights to verify data
+        if (flightNumber.includes('sh') || flightNumber === 'sh101') {
+          console.log(`Comparing flight: ${flight.flightNumber}, query: ${query}`);
+        }
+        
+        // Return true if any field contains the search query
+        return flightNumber.includes(query) ||
+               origin.includes(query) ||
+               destination.includes(query) || 
+               passengerName.includes(query) || 
+               bookingReference.includes(query);
+      });
       
       console.log(`Search results: ${results.length} flights found`);
       setSearchResults(results);

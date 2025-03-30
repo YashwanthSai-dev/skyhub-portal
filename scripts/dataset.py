@@ -57,7 +57,7 @@ cursor.executemany(
     sample_users
 )
 
-# Sample flight data
+# Sample flight data - Make sure flight numbers are in consistent format
 sample_flights = [
     ('SH101', 'SkyHub Airways', 'New York', 'London', '2023-06-15T08:00:00', '2023-06-15T20:00:00', 'ABC123', 'John Doe', 'john@example.com', 'SCHEDULED'),
     ('SH202', 'SkyHub Airways', 'Paris', 'Tokyo', '2023-06-16T09:30:00', '2023-06-17T11:00:00', 'DEF456', 'Jane Smith', 'jane@example.com', 'SCHEDULED'),

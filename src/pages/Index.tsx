@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import FlightSearch from '@/components/dashboard/FlightSearch';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
@@ -9,6 +9,13 @@ import { useFlightData } from '@/data/flightData';
 
 const Index = () => {
   const { flights, loading, error } = useFlightData();
+  
+  useEffect(() => {
+    console.log("Index page loaded with flights:", flights?.length);
+    if (flights && flights.length > 0) {
+      console.log("Sample flight:", flights[0]);
+    }
+  }, [flights]);
 
   return (
     <Layout>
