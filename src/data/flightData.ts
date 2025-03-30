@@ -287,6 +287,14 @@ export const useFlightData = () => {
   }, [bookings, loading]);
 
   const validateCheckIn = (passengerName: string): Flight | null => {
+    const booking = bookings.find(b => 
+      b.passengerName.toLowerCase() === passengerName.toLowerCase()
+    );
+    
+    if (booking) {
+      return flights.find(f => f.id === booking.flightId) || null;
+    }
+    
     const flight = flights.find(f => 
       f.passengerName.toLowerCase() === passengerName.toLowerCase()
     );
@@ -299,49 +307,88 @@ export const useFlightData = () => {
       b.passengerName.toLowerCase() === passengerName.toLowerCase()
     );
     
-    if (bookingIndex === -1) {
-      return { success: false, flight: null };
+    if (bookingIndex !== -1) {
+      const booking = bookings[bookingIndex];
+      const flightIndex = flights.findIndex(f => f.id === booking.flightId);
+      
+      if (flightIndex === -1) {
+        return { success: false, flight: null };
+      }
+      
+      if (booking.hasCheckedIn) {
+        return { success: true, flight: flights[flightIndex] };
+      }
+      
+      const updatedBooking = {
+        ...booking,
+        hasCheckedIn: true,
+        checkInTime: new Date().toISOString()
+      };
+      
+      const updatedFlight = { ...flights[flightIndex] };
+      if (!updatedFlight.checkedInPassengers) {
+        updatedFlight.checkedInPassengers = [];
+      }
+      
+      updatedFlight.checkedInPassengers.push({
+        id: updatedBooking.id,
+        name: updatedBooking.passengerName,
+        email: updatedBooking.passengerEmail,
+        seatNumber: updatedBooking.seatNumber,
+        checkInTime: updatedBooking.checkInTime!
+      });
+      
+      const newBookings = [...bookings];
+      newBookings[bookingIndex] = updatedBooking;
+      setBookings(newBookings);
+      
+      const newFlights = [...flights];
+      newFlights[flightIndex] = updatedFlight;
+      setFlights(newFlights);
+      
+      return { success: true, flight: updatedFlight };
+    } else {
+      const flightIndex = flights.findIndex(f => 
+        f.passengerName.toLowerCase() === passengerName.toLowerCase()
+      );
+      
+      if (flightIndex === -1) {
+        return { success: false, flight: null };
+      }
+      
+      const flight = flights[flightIndex];
+      const newBookingId = `b${Date.now()}`;
+      
+      const newBooking: BookingDetails = {
+        id: newBookingId,
+        flightId: flight.id,
+        passengerName: passengerName,
+        passengerEmail: flight.passengerEmail || `${passengerName.replace(/\s+/g, '.').toLowerCase()}@example.com`,
+        bookingReference: `AUTO${Math.floor(1000 + Math.random() * 9000)}`,
+        hasCheckedIn: true,
+        checkInTime: new Date().toISOString()
+      };
+      
+      setBookings([...bookings, newBooking]);
+      
+      const updatedFlight = { ...flight };
+      if (!updatedFlight.checkedInPassengers) {
+        updatedFlight.checkedInPassengers = [];
+      }
+      
+      updatedFlight.checkedInPassengers.push({
+        id: newBooking.id,
+        name: newBooking.passengerName,
+        email: newBooking.passengerEmail,
+        checkInTime: newBooking.checkInTime!
+      });
+      
+      const newFlights = [...flights];
+      newFlights[flightIndex] = updatedFlight;
+      setFlights(newFlights);
+      
+      return { success: true, flight: updatedFlight };
     }
-    
-    const booking = bookings[bookingIndex];
-    const flightIndex = flights.findIndex(f => f.id === booking.flightId);
-    
-    if (flightIndex === -1) {
-      return { success: false, flight: null };
-    }
-    
-    if (booking.hasCheckedIn) {
-      return { success: true, flight: flights[flightIndex] };
-    }
-    
-    const updatedBooking = {
-      ...booking,
-      hasCheckedIn: true,
-      checkInTime: new Date().toISOString()
-    };
-    
-    const updatedFlight = { ...flights[flightIndex] };
-    if (!updatedFlight.checkedInPassengers) {
-      updatedFlight.checkedInPassengers = [];
-    }
-    
-    updatedFlight.checkedInPassengers.push({
-      id: updatedBooking.id,
-      name: updatedBooking.passengerName,
-      email: updatedBooking.passengerEmail,
-      seatNumber: updatedBooking.seatNumber,
-      checkInTime: updatedBooking.checkInTime!
-    });
-    
-    const newBookings = [...bookings];
-    newBookings[bookingIndex] = updatedBooking;
-    setBookings(newBookings);
-    
-    const newFlights = [...flights];
-    newFlights[flightIndex] = updatedFlight;
-    setFlights(newFlights);
-    
-    return { success: true, flight: updatedFlight };
   };
 
   const addFlight = (flight: Omit<Flight, 'id'>): Flight => {
@@ -373,6 +420,17 @@ export const useFlightData = () => {
     };
     
     setBookings(prev => [...prev, newBooking]);
+    
+    const flightIndex = flights.findIndex(f => f.id === booking.flightId);
+    if (flightIndex !== -1) {
+      const flightsCopy = [...flights];
+      const updatedFlight = {
+        ...flightsCopy[flightIndex]
+      };
+      flightsCopy[flightIndex] = updatedFlight;
+      setFlights(flightsCopy);
+    }
+    
     return newBooking;
   };
 
