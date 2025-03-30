@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Flight } from '@/data/flightData';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useUserAuth } from '@/hooks/useUserAuth';
 
 interface CheckInFormProps {
   validateCheckIn: (bookingReference: string, emailOrName: string) => Flight | null;
@@ -17,6 +18,14 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
   const [emailOrName, setEmailOrName] = useState('');
   const [checkedInFlight, setCheckedInFlight] = useState<Flight | null>(null);
   const { toast: uiToast } = useToast();
+  const { user } = useUserAuth();
+
+  // Pre-fill the name/email field if the user is logged in
+  useEffect(() => {
+    if (user) {
+      setEmailOrName(user.name || user.email || '');
+    }
+  }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +45,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
       if (result.success && result.flight) {
         setCheckedInFlight(result.flight);
         toast.success("Check-in successful! Your boarding pass has been sent to your email.");
+        console.log("Check-in completed for:", emailOrName, "on flight:", result.flight.flightNumber);
       } else {
         toast.error("Check-in failed. Please check your booking reference and email/name.");
       }
@@ -49,6 +59,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
           title: "Check-in Successful",
           description: `Your boarding pass for flight ${flight.flightNumber} has been sent to your email`,
         });
+        console.log("Check-in validated for:", emailOrName, "on flight:", flight.flightNumber);
       } else {
         uiToast({
           title: "Check-in Failed",

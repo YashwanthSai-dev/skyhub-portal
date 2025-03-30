@@ -13,14 +13,17 @@ import { cn } from '@/lib/utils';
 import { Flight, BookingDetails } from '@/data/flightData';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useUserAuth } from '@/hooks/useUserAuth';
 
 interface FlightBookingFormProps {
   flights: Flight[];
   addBooking: (booking: Omit<BookingDetails, 'id'>) => BookingDetails;
+  selectedFlightId?: string | null;
 }
 
-const FlightBookingForm: React.FC<FlightBookingFormProps> = ({ flights, addBooking }) => {
+const FlightBookingForm: React.FC<FlightBookingFormProps> = ({ flights, addBooking, selectedFlightId }) => {
   const navigate = useNavigate();
+  const { user } = useUserAuth();
   const [step, setStep] = useState(1);
   const [date, setDate] = useState<Date>(new Date());
   const [origin, setOrigin] = useState('');
@@ -34,6 +37,31 @@ const FlightBookingForm: React.FC<FlightBookingFormProps> = ({ flights, addBooki
   // Get unique origins and destinations for dropdowns
   const origins = [...new Set(flights.map(f => f.origin))].sort();
   const destinations = [...new Set(flights.map(f => f.destination))].sort();
+  
+  // Auto-select flight if selectedFlightId is provided
+  useEffect(() => {
+    if (selectedFlightId && flights.length > 0) {
+      const flight = flights.find(f => f.id === selectedFlightId);
+      if (flight) {
+        // Set form values based on selected flight
+        setSelectedFlight(flight);
+        setOrigin(flight.origin);
+        setDestination(flight.destination);
+        setDate(new Date(flight.departureTime));
+        
+        // Move to passenger info step
+        setStep(2);
+      }
+    }
+  }, [selectedFlightId, flights]);
+
+  // Pre-fill user info if logged in
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
   
   // Filter flights based on selected criteria
   useEffect(() => {

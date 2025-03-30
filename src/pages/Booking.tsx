@@ -1,13 +1,23 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import FlightBookingForm from '@/components/booking/FlightBookingForm';
 import { useFlightData } from '@/data/flightData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FlightSearchTab from '@/components/check-in/FlightSearchTab';
+import { useSearchParams } from 'react-router-dom';
 
 const Booking = () => {
   const { flights, addBooking, loading } = useFlightData();
+  const [searchParams] = useSearchParams();
+  const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const flightId = searchParams.get('flightId');
+    if (flightId) {
+      setSelectedFlightId(flightId);
+    }
+  }, [searchParams]);
   
   return (
     <Layout>
@@ -26,7 +36,11 @@ const Booking = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-airport-primary"></div>
               </div>
             ) : (
-              <FlightBookingForm flights={flights} addBooking={addBooking} />
+              <FlightBookingForm 
+                flights={flights} 
+                addBooking={addBooking} 
+                selectedFlightId={selectedFlightId}
+              />
             )}
           </TabsContent>
             
