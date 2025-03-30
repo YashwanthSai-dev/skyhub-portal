@@ -21,6 +21,19 @@ const CheckIn = () => {
     }
   }, [flights, loading, error]);
 
+  useEffect(() => {
+    // Check if we have any stored passengers and log them
+    try {
+      const storedPassengers = localStorage.getItem('checkedInPassengers');
+      if (storedPassengers) {
+        const passengers = JSON.parse(storedPassengers);
+        console.log(`Loaded ${passengers.length} checked-in passengers from database`);
+      }
+    } catch (err) {
+      console.error("Error reading stored passengers:", err);
+    }
+  }, []);
+
   const handleCSVUploaded = (data: any[]) => {
     console.log("Uploaded flight data:", data);
     setFlights(data);

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flight } from '@/data/flightData';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,10 +18,67 @@ interface FlightSearchTabProps {
   flights: Flight[];
 }
 
+interface StoredPassenger {
+  flightId: string;
+  flightNumber: string;
+  passengerName: string;
+  checkInTime: string;
+}
+
 const FlightSearchTab: React.FC<FlightSearchTabProps> = ({ flights }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Flight[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [storedPassengers, setStoredPassengers] = useState<StoredPassenger[]>([]);
+
+  // Load checked-in passengers from local storage
+  useEffect(() => {
+    try {
+      const savedPassengers = localStorage.getItem('checkedInPassengers');
+      if (savedPassengers) {
+        setStoredPassengers(JSON.parse(savedPassengers));
+        console.log("Loaded checked-in passengers from database:", JSON.parse(savedPassengers).length);
+      }
+    } catch (err) {
+      console.error("Error loading passengers from database:", err);
+    }
+  }, []);
+
+  // Combine flight data with stored passenger data
+  const getEnhancedFlights = () => {
+    return flights.map(flight => {
+      // Find any stored passengers for this flight
+      const flightPassengers = storedPassengers.filter(p => p.flightId === flight.id);
+      
+      if (flightPassengers.length > 0) {
+        const updatedFlight = { ...flight };
+        
+        if (!updatedFlight.checkedInPassengers) {
+          updatedFlight.checkedInPassengers = [];
+        }
+        
+        // Add any stored passengers that aren't already in the checkedInPassengers array
+        flightPassengers.forEach(passenger => {
+          const existingPassenger = updatedFlight.checkedInPassengers?.find(p => 
+            p.name.toLowerCase() === passenger.passengerName.toLowerCase()
+          );
+          
+          if (!existingPassenger) {
+            updatedFlight.checkedInPassengers.push({
+              id: `stored-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              name: passenger.passengerName,
+              email: `${passenger.passengerName.replace(/\s+/g, '.').toLowerCase()}@example.com`,
+              checkInTime: passenger.checkInTime
+            });
+          }
+        });
+        
+        return updatedFlight;
+      }
+      
+      return flight;
+    });
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,14 +90,17 @@ const FlightSearchTab: React.FC<FlightSearchTabProps> = ({ flights }) => {
     }
     
     const term = searchTerm.toLowerCase().trim();
+    const enhancedFlights = getEnhancedFlights();
     
     // Search by flight number, route, destination, origin, passenger name
-    const results = flights.filter(flight => 
+    const results = enhancedFlights.filter(flight => 
       flight.flightNumber.toLowerCase().includes(term) ||
       flight.origin.toLowerCase().includes(term) ||
       flight.destination.toLowerCase().includes(term) ||
       flight.passengerName.toLowerCase().includes(term) ||
-      flight.bookingReference.toLowerCase().includes(term)
+      flight.bookingReference.toLowerCase().includes(term) ||
+      // Also search through checked-in passengers
+      flight.checkedInPassengers?.some(p => p.name.toLowerCase().includes(term))
     );
     
     console.log(`Search results for "${term}":`, results);

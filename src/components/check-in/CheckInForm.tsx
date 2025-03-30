@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,21 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
       if (result.success && result.flight) {
         setCheckedInFlight(result.flight);
         toast.success("Check-in successful! Your boarding pass has been sent to your email.");
+        
+        // Save checked-in passenger to local storage for persistence
+        try {
+          const storedPassengers = JSON.parse(localStorage.getItem('checkedInPassengers') || '[]');
+          storedPassengers.push({
+            flightId: result.flight.id,
+            flightNumber: result.flight.flightNumber,
+            passengerName: passengerName,
+            checkInTime: new Date().toISOString()
+          });
+          localStorage.setItem('checkedInPassengers', JSON.stringify(storedPassengers));
+          console.log("Saved passenger to database:", passengerName, "for flight:", result.flight.flightNumber);
+        } catch (err) {
+          console.error("Failed to save passenger to database:", err);
+        }
         
         // Log the updated flight with checked-in passengers for debugging
         console.log("Check-in completed for:", passengerName);

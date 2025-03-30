@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Plane, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,13 @@ interface FlightSearchProps {
   error?: string | null;
 }
 
+interface StoredPassenger {
+  flightId: string;
+  flightNumber: string;
+  passengerName: string;
+  checkInTime: string;
+}
+
 const FlightSearch: React.FC<FlightSearchProps> = ({ 
   flights = [], 
   loading = false,
@@ -31,6 +39,7 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
 }) => {
   const [searchResults, setSearchResults] = useState<Flight[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [storedPassengers, setStoredPassengers] = useState<StoredPassenger[]>([]);
 
   const form = useForm({
     defaultValues: {
@@ -44,7 +53,54 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
     if (flights && flights.length > 0) {
       console.log("Sample flight data:", flights[0]);
     }
+    
+    // Load any stored passengers from local storage
+    try {
+      const savedPassengers = localStorage.getItem('checkedInPassengers');
+      if (savedPassengers) {
+        setStoredPassengers(JSON.parse(savedPassengers));
+        console.log("Loaded stored passengers:", JSON.parse(savedPassengers).length);
+      }
+    } catch (err) {
+      console.error("Error loading stored passengers:", err);
+    }
   }, [flights]);
+
+  // Combine flight data with stored passenger data
+  const getEnhancedFlights = () => {
+    return flights.map(flight => {
+      // Find any stored passengers for this flight
+      const flightPassengers = storedPassengers.filter(p => p.flightId === flight.id);
+      
+      if (flightPassengers.length > 0) {
+        const updatedFlight = { ...flight };
+        
+        if (!updatedFlight.checkedInPassengers) {
+          updatedFlight.checkedInPassengers = [];
+        }
+        
+        // Add any stored passengers that aren't already in the checkedInPassengers array
+        flightPassengers.forEach(passenger => {
+          const existingPassenger = updatedFlight.checkedInPassengers?.find(p => 
+            p.name.toLowerCase() === passenger.passengerName.toLowerCase()
+          );
+          
+          if (!existingPassenger) {
+            updatedFlight.checkedInPassengers.push({
+              id: `stored-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              name: passenger.passengerName,
+              email: `${passenger.passengerName.replace(/\s+/g, '.').toLowerCase()}@example.com`,
+              checkInTime: passenger.checkInTime
+            });
+          }
+        });
+        
+        return updatedFlight;
+      }
+      
+      return flight;
+    });
+  };
 
   const onSubmit = (data: { searchQuery: string }) => {
     setIsSearching(true);
@@ -66,16 +122,19 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
     console.log(`Searching for: "${query}" among ${flights.length} flights`);
     
     setTimeout(() => {
+      const enhancedFlights = getEnhancedFlights();
+      
       // Debug logging for search
-      console.log("Flight data for search:", flights.map(f => ({
+      console.log("Flight data for search:", enhancedFlights.map(f => ({
         id: f.id,
         flightNumber: f.flightNumber,
         origin: f.origin,
-        destination: f.destination
+        destination: f.destination,
+        passengers: f.checkedInPassengers?.length || 0
       })));
       
       // More flexible search that handles case insensitivity and partial matches
-      const results = flights.filter(flight => {
+      const results = enhancedFlights.filter(flight => {
         const flightNumber = flight.flightNumber?.toLowerCase().trim() || '';
         const origin = flight.origin?.toLowerCase().trim() || '';
         const destination = flight.destination?.toLowerCase().trim() || '';
@@ -87,19 +146,12 @@ const FlightSearch: React.FC<FlightSearchProps> = ({
           passenger.name.toLowerCase().includes(query)
         );
         
-        // Log individual search comparisons for debugging
-        const matches = flightNumber.includes(query) ||
-                   origin.includes(query) ||
-                   destination.includes(query) || 
-                   passengerName.includes(query) || 
-                   bookingReference.includes(query) ||
-                   hasMatchingPassenger;
-        
-        if (query === "sh101" || query === "sh" || query.includes("101")) {
-          console.log(`Checking flight: ${flight.flightNumber} (${flightNumber}) against "${query}": ${matches}`);
-        }
-        
-        return matches;
+        return flightNumber.includes(query) ||
+               origin.includes(query) ||
+               destination.includes(query) || 
+               passengerName.includes(query) || 
+               bookingReference.includes(query) ||
+               hasMatchingPassenger;
       });
       
       console.log(`Search results: ${results.length} flights found`);
