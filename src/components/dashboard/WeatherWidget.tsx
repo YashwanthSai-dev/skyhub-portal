@@ -23,15 +23,23 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city =
   const [weatherData, setWeatherData] = useState<WeatherData | null>(initialData || null);
   const [loading, setLoading] = useState<boolean>(!initialData);
   const [error, setError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState<boolean>(false);
 
   useEffect(() => {
+    // Check if we're offline
+    if (!navigator.onLine) {
+      setIsOffline(true);
+      setWeatherData(getFallbackWeatherData(city));
+      setLoading(false);
+      return;
+    }
+
     const fetchWeatherData = async () => {
       try {
         setLoading(true);
         setError(null);
         
         // Using OpenWeatherMap API - Replace with your own API key if you have one
-        // For demo purposes, we're using a public API key - consider getting your own for production
         const apiKey = '8d2de98e089f1c28e1a22fc19a24ef04'; // This is a public demo key
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
@@ -56,10 +64,8 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city =
       } catch (err) {
         console.error('Error fetching weather data:', err);
         setError('Could not load weather data');
-        // Fall back to initial data if provided
-        if (initialData) {
-          setWeatherData(initialData);
-        }
+        // Fall back to mock data if we can't fetch
+        setWeatherData(getFallbackWeatherData(city));
       } finally {
         setLoading(false);
       }
@@ -69,7 +75,37 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city =
     if (!initialData) {
       fetchWeatherData();
     }
+
+    // Setup online/offline event listeners
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, [city, initialData]);
+
+  const handleOnline = () => {
+    setIsOffline(false);
+  };
+
+  const handleOffline = () => {
+    setIsOffline(true);
+    setWeatherData(getFallbackWeatherData(city));
+  };
+
+  const getFallbackWeatherData = (location: string): WeatherData => {
+    return {
+      temperature: 22,
+      condition: 'clear',
+      windSpeed: 8,
+      windDirection: 'NE',
+      humidity: 65,
+      visibility: '10.0 km',
+      location: location,
+    };
+  };
 
   const getWindDirection = (degrees: number): string => {
     const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
@@ -143,7 +179,10 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data: initialData, city =
     <Card>
       <CardHeader className="pb-2">
         <CardTitle>Current Weather</CardTitle>
-        <CardDescription>{weatherData.location || 'Local airport conditions'}</CardDescription>
+        <CardDescription>
+          {weatherData.location || 'Local airport conditions'}
+          {isOffline && ' (Offline Mode)'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
