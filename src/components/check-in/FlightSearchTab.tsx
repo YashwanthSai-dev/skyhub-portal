@@ -7,6 +7,12 @@ import { Search } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface FlightSearchTabProps {
   flights: Flight[];
@@ -113,6 +119,53 @@ const FlightSearchTab: React.FC<FlightSearchTabProps> = ({ flights }) => {
                   ))}
                 </TableBody>
               </Table>
+
+              {/* Accordion for checked-in passengers */}
+              <Accordion type="single" collapsible className="w-full">
+                {searchResults.map(flight => (
+                  <AccordionItem value={`passengers-${flight.id}`} key={`acc-${flight.id}`}>
+                    <AccordionTrigger className="px-4 py-2 hover:bg-gray-50">
+                      <div className="flex items-center gap-2">
+                        <span>Flight {flight.flightNumber} Passengers</span>
+                        {flight.checkedInPassengers && flight.checkedInPassengers.length > 0 && (
+                          <Badge variant="outline" className="bg-green-50">
+                            {flight.checkedInPassengers.length} checked in
+                          </Badge>
+                        )}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      {flight.checkedInPassengers && flight.checkedInPassengers.length > 0 ? (
+                        <div className="space-y-2">
+                          <h4 className="font-medium">Checked-in Passengers:</h4>
+                          <div className="border rounded-md overflow-hidden">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Passenger Name</TableHead>
+                                  <TableHead>Seat</TableHead>
+                                  <TableHead>Check-in Time</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {flight.checkedInPassengers.map(passenger => (
+                                  <TableRow key={passenger.id}>
+                                    <TableCell>{passenger.name}</TableCell>
+                                    <TableCell>{passenger.seatNumber || 'Not assigned'}</TableCell>
+                                    <TableCell>{format(new Date(passenger.checkInTime), 'MMM d, h:mm a')}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500">No passengers have checked in for this flight yet.</p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           ) : (
             <div className="text-center py-8 bg-gray-50 rounded-lg border">

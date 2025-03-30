@@ -44,7 +44,11 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
       if (result.success && result.flight) {
         setCheckedInFlight(result.flight);
         toast.success("Check-in successful! Your boarding pass has been sent to your email.");
-        console.log("Check-in completed for:", passengerName, "on flight:", result.flight.flightNumber);
+        
+        // Log the updated flight with checked-in passengers for debugging
+        console.log("Check-in completed for:", passengerName);
+        console.log("Updated flight details:", result.flight);
+        console.log("Checked-in passengers:", result.flight.checkedInPassengers);
       } else {
         toast.error("Check-in failed. Please check your name.");
       }
@@ -123,7 +127,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
             </div>
             <div>
               <p className="text-sm text-gray-500">Passenger</p>
-              <p className="text-lg font-medium">{checkedInFlight.passengerName}</p>
+              <p className="text-lg font-medium">{passengerName}</p>
             </div>
           </div>
           <p className="mt-4 text-green-700">Your boarding pass has been sent to {checkedInFlight.passengerEmail}</p>
