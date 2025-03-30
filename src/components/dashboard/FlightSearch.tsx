@@ -1,20 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plane } from 'lucide-react';
+import { Search, Plane, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormControl } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Flight } from '@/data/flightData';
 import { toast } from 'sonner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface FlightSearchProps {
   flights?: Flight[];
+  loading?: boolean;
+  error?: string | null;
 }
 
-const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
+const FlightSearch: React.FC<FlightSearchProps> = ({ 
+  flights = [], 
+  loading = false,
+  error = null
+}) => {
   const [searchResults, setSearchResults] = useState<Flight[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -73,7 +79,22 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
     <div className="bg-white rounded-lg border p-4 space-y-4">
       <h2 className="text-lg font-semibold">Search Flights</h2>
       
-      {flights.length === 0 && (
+      {loading && (
+        <div className="flex items-center justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-airport-primary" />
+          <span className="ml-2">Loading flight data...</span>
+        </div>
+      )}
+      
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            {error}. Please make sure you've run the dataset.py script to generate the flight database.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {!loading && !error && flights.length === 0 && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-md mb-4">
           <p className="text-amber-800">
             No flight data available. Please make sure you've run the dataset.py script to generate the flight database.
@@ -93,11 +114,24 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
                     <Input 
                       placeholder="Search by flight number, origin, destination, or passenger..." 
                       {...field} 
+                      disabled={loading || flights.length === 0}
                     />
                   </FormControl>
-                  <Button type="submit" disabled={isSearching}>
-                    {isSearching ? "Searching..." : "Search"}
-                    <Search className="ml-2 h-4 w-4" />
+                  <Button 
+                    type="submit" 
+                    disabled={isSearching || loading || flights.length === 0}
+                  >
+                    {isSearching ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Searching...
+                      </>
+                    ) : (
+                      <>
+                        Search
+                        <Search className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </FormItem>
@@ -105,6 +139,26 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ flights = [] }) => {
           />
         </form>
       </Form>
+
+      {!loading && flights.length > 0 && searchResults.length === 0 && !isSearching && (
+        <div className="p-4 bg-blue-50 border border-blue-100 rounded-md">
+          <div className="flex items-center">
+            <Plane className="h-5 w-5 text-blue-500 mr-2" />
+            <p className="text-blue-700">
+              Enter a search term above to find flights by flight number, origin, destination, or passenger name.
+            </p>
+          </div>
+          <div className="mt-2 text-blue-600 text-sm">
+            <p>Try searching for:</p>
+            <ul className="list-disc pl-5 mt-1">
+              <li>Flight number (e.g. "SH101")</li>
+              <li>Origin city (e.g. "New York")</li>
+              <li>Destination (e.g. "London")</li>
+              <li>Passenger name (e.g. "John")</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {searchResults.length > 0 && (
         <div className="mt-4">

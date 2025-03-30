@@ -5,8 +5,11 @@ import FlightSearch from '@/components/dashboard/FlightSearch';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plane, MessageCircle, CalendarDays, TrendingUp, CheckSquare, BarChart3 } from 'lucide-react';
+import { useFlightData } from '@/data/flightData';
 
 const Index = () => {
+  const { flights, loading, error } = useFlightData();
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -66,7 +69,7 @@ const Index = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <FlightSearch />
+            <FlightSearch flights={flights} loading={loading} error={error} />
           </div>
           
           <div>
