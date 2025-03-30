@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFlightData } from '@/data/flightData';
@@ -13,6 +13,7 @@ import { useUserAuth } from '@/hooks/useUserAuth';
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
   const { isEmployee } = useUserAuth();
+  const [checkedInCount, setCheckedInCount] = useState(0);
 
   useEffect(() => {
     if (flights.length > 0 && !loading && !error) {
@@ -27,6 +28,7 @@ const CheckIn = () => {
       const storedPassengers = localStorage.getItem('checkedInPassengers');
       if (storedPassengers) {
         const passengers = JSON.parse(storedPassengers);
+        setCheckedInCount(passengers.length);
         console.log(`Loaded ${passengers.length} checked-in passengers from database`);
       }
     } catch (err) {
@@ -46,6 +48,14 @@ const CheckIn = () => {
 
         <div>
           <h1 className="text-4xl font-bold text-gray-800 mb-8">Web check-in</h1>
+          
+          {checkedInCount > 0 && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800">
+                You have {checkedInCount} checked-in {checkedInCount === 1 ? 'passenger' : 'passengers'} in the system.
+              </p>
+            </div>
+          )}
 
           <Tabs defaultValue="check-in" className="max-w-4xl">
             <TabsList className="mb-6">

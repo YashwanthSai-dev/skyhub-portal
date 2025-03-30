@@ -43,7 +43,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
       const result = performCheckIn(passengerName);
       if (result.success && result.flight) {
         setCheckedInFlight(result.flight);
-        toast.success("Check-in successful! Your boarding pass has been sent to your email.");
+        toast.success(`Check-in successful for flight ${result.flight.flightNumber}! Your boarding pass has been sent to your email.`);
         
         // Save checked-in passenger to local storage for persistence
         try {
@@ -126,7 +126,7 @@ const CheckInForm: React.FC<CheckInFormProps> = ({ validateCheckIn, performCheck
       
       {checkedInFlight && (
         <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-          <h3 className="text-xl font-bold text-green-800 mb-4">Check-in Successful!</h3>
+          <h3 className="text-xl font-bold text-green-800 mb-4">Check-in Successful for Flight {checkedInFlight.flightNumber}!</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-500">Flight</p>
