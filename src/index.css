@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -84,21 +83,19 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
-
-@layer base {
-  * {
-    @apply border-border;
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Open Sans", "Helvetica Neue", Arial, sans-serif;
   }
-
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground scrollbar-none min-h-screen;
     font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: 0.01em;
   }
-
   h1, h2, h3, h4, h5, h6 {
     @apply font-medium tracking-tight;
   }
+  .fade-in { animation: fadeIn 0.5s ease forwards; }
+  .slide-in { animation: slideIn 0.5s cubic-bezier(.31,1.44,.53,1.05) forwards; }
 }
 
 @layer components {
