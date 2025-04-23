@@ -43,7 +43,7 @@ const Schedule = () => {
   
   // Use optional chaining for airline property since it may not exist on all flight objects
   const airlines = useMemo(
-    () => Array.from(new Set(flights.map(f => f.airline || "Unknown"))).filter(a => a !== "Unknown").sort(),
+    () => Array.from(new Set(flights.map(f => f.airline ?? "Unknown"))).filter(a => a !== "Unknown").sort(),
     [flights]
   );
 
@@ -70,7 +70,7 @@ const Schedule = () => {
       const flightDate = format(new Date(flight.departureTime), 'yyyy-MM-dd');
       const matchesDate = flightDate === selectedDateStr;
       const matchesCity = !filter.city || flight.origin === filter.city;
-      const matchesAirline = !filter.airline || (flight.airline || "Unknown") === filter.airline;
+      const matchesAirline = !filter.airline || (flight.airline ?? "Unknown") === filter.airline;
       const matchesTime = !filter.timeOfDay || getTimeOfDay(flight.departureTime) === filter.timeOfDay;
       return matchesDate && matchesCity && matchesAirline && matchesTime;
     });
@@ -174,7 +174,7 @@ const Schedule = () => {
                     day_today: "ring-2 ring-primary ring-offset-2",
                   }}
                   components={{
-                    Day: ({ date, ...props }) => {
+                    Day: ({ date, ...props }: any) => {
                       const isSelected =
                         selectedDate &&
                         format(date, "yyyy-MM-dd") ===
@@ -240,9 +240,9 @@ const Schedule = () => {
                         style={{ minHeight: 96 }}
                       >
                         <div className="flex items-center gap-4 flex-1 min-w-0">
-                          <AirlineLogo airline={flight.airline || "Unknown"} />
+                          <AirlineLogo airline={flight.airline ?? "Unknown"} />
                           <div className="ml-2 min-w-0">
-                            <div className="font-semibold text-base sm:text-lg truncate">{flight.flightNumber} <span className="text-gray-400 font-normal">({flight.airline || "Unknown"})</span></div>
+                            <div className="font-semibold text-base sm:text-lg truncate">{flight.flightNumber} <span className="text-gray-400 font-normal">({flight.airline ?? "Unknown"})</span></div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               {flight.origin} <span>&rarr;</span> {flight.destination}
                             </div>

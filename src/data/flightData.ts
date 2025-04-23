@@ -13,6 +13,7 @@ export interface Flight {
   status: 'SCHEDULED' | 'BOARDING' | 'DEPARTED' | 'ARRIVED' | 'CANCELLED';
   checkedInPassengers?: CheckedInPassenger[];
   date?: string;
+  airline?: string;
 }
 
 export interface CheckedInPassenger {
@@ -46,7 +47,8 @@ const mockFlights: Flight[] = [
     passengerName: "John Smith",
     passengerEmail: "john@example.com",
     status: "SCHEDULED",
-    checkedInPassengers: []
+    checkedInPassengers: [],
+    airline: "Airline A"
   },
   {
     id: "2",
@@ -59,7 +61,8 @@ const mockFlights: Flight[] = [
     passengerName: "Jane Doe",
     passengerEmail: "jane@example.com",
     status: "BOARDING",
-    checkedInPassengers: []
+    checkedInPassengers: [],
+    airline: "Airline B"
   },
   {
     id: "3",
@@ -72,7 +75,8 @@ const mockFlights: Flight[] = [
     passengerName: "Robert Johnson",
     passengerEmail: "robert@example.com",
     status: "DEPARTED",
-    checkedInPassengers: []
+    checkedInPassengers: [],
+    airline: "Airline C"
   },
   {
     id: "4",
@@ -85,7 +89,8 @@ const mockFlights: Flight[] = [
     passengerName: "Sarah Williams",
     passengerEmail: "sarah@example.com",
     status: "ARRIVED",
-    checkedInPassengers: []
+    checkedInPassengers: [],
+    airline: "Airline D"
   },
   {
     id: "5",
@@ -98,7 +103,8 @@ const mockFlights: Flight[] = [
     passengerName: "Michael Brown",
     passengerEmail: "michael@example.com",
     status: "SCHEDULED",
-    checkedInPassengers: []
+    checkedInPassengers: [],
+    airline: "Airline E"
   },
   {
     id: "6",
@@ -110,7 +116,9 @@ const mockFlights: Flight[] = [
     bookingReference: "PQR678",
     passengerName: "Emily Davis",
     passengerEmail: "emily@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: [],
+    airline: "Airline F"
   },
   {
     id: "7",
@@ -122,7 +130,9 @@ const mockFlights: Flight[] = [
     bookingReference: "STU901",
     passengerName: "David Wilson",
     passengerEmail: "david@example.com",
-    status: "ARRIVED"
+    status: "ARRIVED",
+    checkedInPassengers: [],
+    airline: "Airline G"
   },
   {
     id: "8",
@@ -134,7 +144,9 @@ const mockFlights: Flight[] = [
     bookingReference: "VWX234",
     passengerName: "Lisa Martinez",
     passengerEmail: "lisa@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: [],
+    airline: "Airline H"
   },
   {
     id: "9",
@@ -146,7 +158,9 @@ const mockFlights: Flight[] = [
     bookingReference: "YZA567",
     passengerName: "Kevin Taylor",
     passengerEmail: "kevin@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: [],
+    airline: "Airline I"
   },
   {
     id: "10",
@@ -158,7 +172,9 @@ const mockFlights: Flight[] = [
     bookingReference: "BCD890",
     passengerName: "Amanda Garcia",
     passengerEmail: "amanda@example.com",
-    status: "DEPARTED"
+    status: "DEPARTED",
+    checkedInPassengers: [],
+    airline: "Airline J"
   },
   {
     id: "11",
@@ -170,7 +186,9 @@ const mockFlights: Flight[] = [
     bookingReference: "EFG123",
     passengerName: "Thomas Roberts",
     passengerEmail: "thomas@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: [],
+    airline: "Airline K"
   },
   {
     id: "12",
@@ -182,7 +200,9 @@ const mockFlights: Flight[] = [
     bookingReference: "HIJ456",
     passengerName: "Patricia White",
     passengerEmail: "patricia@example.com",
-    status: "SCHEDULED"
+    status: "SCHEDULED",
+    checkedInPassengers: [],
+    airline: "Airline L"
   }
 ];
 
@@ -473,7 +493,8 @@ export const useFlightData = () => {
           passengerEmail: flight.passengerEmail || '',
           status: (flight.status as Flight['status']) || 'SCHEDULED',
           checkedInPassengers: [],
-          date: flight.date || ''
+          date: flight.date || '',
+          airline: flight.airline || ''
         });
       }
       
