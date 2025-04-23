@@ -145,7 +145,15 @@
 }
 
 @layer utilities {
-  /* Animations */
+  .scrollbar-none {
+    -ms-overflow-style: none;  // IE and Edge
+    scrollbar-width: none;     // Firefox
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;  // Chrome, Safari, and Opera
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
   }
