@@ -40,8 +40,10 @@ const Schedule = () => {
     () => Array.from(new Set(flights.map(f => f.origin))).sort(),
     [flights]
   );
+  
+  // Use optional chaining for airline property since it may not exist on all flight objects
   const airlines = useMemo(
-    () => Array.from(new Set(flights.map(f => f.airline))).sort(),
+    () => Array.from(new Set(flights.map(f => f.airline || "Unknown"))).filter(a => a !== "Unknown").sort(),
     [flights]
   );
 
@@ -68,7 +70,7 @@ const Schedule = () => {
       const flightDate = format(new Date(flight.departureTime), 'yyyy-MM-dd');
       const matchesDate = flightDate === selectedDateStr;
       const matchesCity = !filter.city || flight.origin === filter.city;
-      const matchesAirline = !filter.airline || flight.airline === filter.airline;
+      const matchesAirline = !filter.airline || (flight.airline || "Unknown") === filter.airline;
       const matchesTime = !filter.timeOfDay || getTimeOfDay(flight.departureTime) === filter.timeOfDay;
       return matchesDate && matchesCity && matchesAirline && matchesTime;
     });
@@ -182,7 +184,7 @@ const Schedule = () => {
                           {...props}
                           className={cn(
                             "relative rounded-full h-10 w-10 flex items-center justify-center font-medium transition",
-                            props.selected
+                            props.className?.includes("selected")
                               ? "bg-airport-primary text-white scale-110 shadow-xl"
                               : "hover:bg-blue-100/80 dark:hover:bg-blue-700/40",
                             "focus:outline-none"
@@ -238,9 +240,9 @@ const Schedule = () => {
                         style={{ minHeight: 96 }}
                       >
                         <div className="flex items-center gap-4 flex-1 min-w-0">
-                          <AirlineLogo airline={flight.airline} />
+                          <AirlineLogo airline={flight.airline || "Unknown"} />
                           <div className="ml-2 min-w-0">
-                            <div className="font-semibold text-base sm:text-lg truncate">{flight.flightNumber} <span className="text-gray-400 font-normal">({flight.airline})</span></div>
+                            <div className="font-semibold text-base sm:text-lg truncate">{flight.flightNumber} <span className="text-gray-400 font-normal">({flight.airline || "Unknown"})</span></div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               {flight.origin} <span>&rarr;</span> {flight.destination}
                             </div>

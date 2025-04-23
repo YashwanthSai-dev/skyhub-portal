@@ -12,7 +12,6 @@ const statusMap: Record<
 > = {
   ARRIVED: { color: "bg-green-500 text-white", text: "Arrived" },
   CANCELLED: { color: "bg-red-500 text-white", text: "Cancelled" },
-  CANCELLED: { color: "bg-red-500 text-white", text: "Cancelled" },
   DEPARTED: { color: "bg-purple-500 text-white", text: "Departed" },
   BOARDING: { color: "bg-amber-400 text-white", text: "Boarding" },
   SCHEDULED: { color: "bg-blue-500 text-white", text: "Scheduled" },
