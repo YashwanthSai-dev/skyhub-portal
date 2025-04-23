@@ -16,6 +16,9 @@ const statusMap: Record<
   DEPARTED: { color: "bg-purple-500 text-white", text: "Departed" },
   BOARDING: { color: "bg-amber-400 text-white", text: "Boarding" },
   SCHEDULED: { color: "bg-blue-500 text-white", text: "Scheduled" },
+  EN_ROUTE: { color: "bg-blue-500 text-white", text: "En Route" },
+  DELAYED: { color: "bg-orange-500 text-white", text: "Delayed" },
+  LANDED: { color: "bg-green-500 text-white", text: "Landed" },
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, animated }) => {
@@ -23,7 +26,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, animated }) =>
     color: "bg-gray-400 text-white",
     text: status,
   };
-  // Add animate-bounce for entering or animated == true
+  
   return (
     <span
       className={cn(

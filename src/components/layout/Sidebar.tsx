@@ -3,12 +3,12 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  CalendarDays, 
   BarChart3, 
   LogOut,
   CheckSquare,
   TrendingUp,
-  MessageCircle
+  MessageCircle,
+  Globe
 } from 'lucide-react';
 import { 
   Sidebar as SidebarComponent,
@@ -75,10 +75,10 @@ const Sidebar = () => {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className={isActive('/schedule') ? 'bg-gray-100 text-airport-primary' : ''}>
-                <Link to="/schedule" className="transition-all duration-200 hover:translate-x-1">
-                  <CalendarDays className="h-4 w-4" />
-                  <span>Schedule</span>
+              <SidebarMenuButton asChild className={isActive('/flight-tracker') ? 'bg-gray-100 text-airport-primary' : ''}>
+                <Link to="/flight-tracker" className="transition-all duration-200 hover:translate-x-1">
+                  <Globe className="h-4 w-4" />
+                  <span>Live Flight Tracker</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
