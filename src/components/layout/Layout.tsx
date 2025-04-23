@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children, requireAuth = true }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-airport-background">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-airport-primary"></div>
       </div>
     );
@@ -31,11 +31,11 @@ const Layout: React.FC<LayoutProps> = ({ children, requireAuth = true }) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-airport-background">
         <Sidebar />
         <div className="flex flex-col flex-1">
           <Navbar />
-          <main className="flex-1 p-6 overflow-auto bg-airport-background">
+          <main className="flex-1 p-6 md:p-8 overflow-auto bg-airport-background">
             {children}
           </main>
         </div>

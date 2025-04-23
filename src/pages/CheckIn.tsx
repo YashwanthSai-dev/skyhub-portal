@@ -9,6 +9,8 @@ import FlightSearchTab from '@/components/check-in/FlightSearchTab';
 import AdminTab from '@/components/check-in/AdminTab';
 import { toast } from 'sonner';
 import { useUserAuth } from '@/hooks/useUserAuth';
+import { motion } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
@@ -46,36 +48,46 @@ const CheckIn = () => {
       <div className="flex flex-col gap-6">
         <BreadcrumbNav />
 
-        <div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-8">Web check-in</h1>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">Web Check-In</h1>
           
           {checkedInCount > 0 && (
-            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg shadow-sm flex items-center gap-3"
+            >
+              <CheckCircle className="text-blue-500 h-5 w-5" />
               <p className="text-blue-800">
                 You have {checkedInCount} checked-in {checkedInCount === 1 ? 'passenger' : 'passengers'} in the system.
               </p>
-            </div>
+            </motion.div>
           )}
 
           <Tabs defaultValue="check-in" className="max-w-4xl">
-            <TabsList className="mb-6">
-              <TabsTrigger value="check-in">Passenger Check-in</TabsTrigger>
-              <TabsTrigger value="search">Flight Search</TabsTrigger>
+            <TabsList className="mb-6 bg-white border border-gray-200 shadow-sm p-1 rounded-lg">
+              <TabsTrigger value="check-in" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Passenger Check-in</TabsTrigger>
+              <TabsTrigger value="search" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Flight Search</TabsTrigger>
               {isEmployee && (
-                <TabsTrigger value="admin">Admin: Upload Flight Data</TabsTrigger>
+                <TabsTrigger value="admin" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Admin: Upload Flight Data</TabsTrigger>
               )}
             </TabsList>
             
-            <TabsContent value="check-in">
+            <TabsContent value="check-in" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
               <CheckInForm validateCheckIn={validateCheckIn} performCheckIn={performCheckIn} />
             </TabsContent>
 
-            <TabsContent value="search">
+            <TabsContent value="search" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
               <FlightSearchTab flights={flights} />
             </TabsContent>
 
             {isEmployee && (
-              <TabsContent value="admin">
+              <TabsContent value="admin" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
                 <AdminTab 
                   flights={flights} 
                   loading={loading} 
@@ -86,7 +98,7 @@ const CheckIn = () => {
               </TabsContent>
             )}
           </Tabs>
-        </div>
+        </motion.div>
       </div>
     </Layout>
   );

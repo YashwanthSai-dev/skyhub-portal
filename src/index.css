@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,7 +35,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 204 66% 41%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 220 76% 21%;
     --sidebar-foreground: 214 100% 98%;
@@ -91,6 +93,11 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
   }
 }
 
@@ -113,5 +120,62 @@
   
   .flight-status-canceled {
     @apply bg-red-100 text-red-800 border-l-4 border-red-500;
+  }
+
+  .hover-elevate {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+  }
+
+  .menu-item {
+    @apply transition-all duration-200 hover:translate-x-1;
+  }
+
+  .card {
+    @apply rounded-xl bg-white border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all duration-300;
+  }
+
+  .input-modern {
+    @apply transition-all duration-200 rounded-lg border border-gray-200 focus:ring-2 focus:ring-airport-primary/20 focus:border-airport-primary;
+  }
+
+  .button-primary {
+    @apply bg-airport-primary text-white hover:bg-airport-primary/90 transition-all duration-300 rounded-lg font-medium shadow-sm hover:shadow;
+  }
+
+  .button-secondary {
+    @apply bg-white text-airport-primary border border-airport-primary/20 hover:bg-airport-primary/5 transition-all duration-300 rounded-lg font-medium;
+  }
+}
+
+@layer utilities {
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
