@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -135,6 +134,7 @@ const LiveFlightTracker = () => {
         'type': 'geojson',
         'data': {
           'type': 'Feature',
+          'properties': {},
           'geometry': {
             'type': 'Point',
             'coordinates': [0, 0]
