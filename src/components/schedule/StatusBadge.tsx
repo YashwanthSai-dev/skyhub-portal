@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
   status: string;
+  animated?: boolean;
 }
 
 const statusMap: Record<
@@ -17,15 +18,19 @@ const statusMap: Record<
   SCHEDULED: { color: "bg-blue-500 text-white", text: "Scheduled" },
 };
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, animated }) => {
   const mapping = statusMap[status?.toUpperCase()] || {
     color: "bg-gray-400 text-white",
     text: status,
   };
+  // Add animate-bounce for entering or animated == true
   return (
     <span
       className={cn(
-        "inline-block rounded-full px-3 py-1 text-xs font-semibold shadow-sm transition-transform animate-fade-in",
+        "inline-block rounded-full px-3 py-1 text-xs font-bold shadow-sm transition-transform",
+        animated
+          ? "animate-bounce"
+          : "animate-fade-in",
         mapping.color,
       )}
       style={{ minWidth: 80, textAlign: "center" }}
