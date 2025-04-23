@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -96,14 +95,6 @@ const Sidebar = () => {
       </SidebarContent>
       <SidebarFooter className="py-4 border-t border-gray-100">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild className={isActive('/settings') ? 'bg-gray-100 text-airport-primary' : ''}>
-              <Link to="/settings" className="transition-all duration-200 hover:translate-x-1">
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link to="/logout" className="text-gray-600 transition-all duration-200 hover:translate-x-1">
