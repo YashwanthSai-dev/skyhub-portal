@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   CalendarDays, 
   BarChart3, 
-  Settings, 
   LogOut,
   CheckSquare,
   TrendingUp,
