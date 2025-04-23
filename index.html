@@ -36,6 +36,41 @@
       .flight-marker [class*="rotate-"] {
         transform: rotate(var(--rotation, 0deg));
       }
+      
+      /* Glow effect for selected flights */
+      .drop-shadow-glow {
+        filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.7));
+      }
+      
+      /* Text size for very small labels */
+      .text-2xs {
+        font-size: 0.65rem;
+        line-height: 1rem;
+      }
+      
+      /* Radar effect */
+      @keyframes radar-sweep {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+          opacity: 0.7;
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      
+      .radar-sweep {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(90deg, rgba(0,255,0,0.2) 0%, transparent 50%, transparent 100%);
+        animation: radar-sweep 4s linear infinite;
+        pointer-events: none;
+      }
     </style>
   </head>
 

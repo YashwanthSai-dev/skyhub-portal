@@ -27,12 +27,17 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, animated }) =>
     text: status,
   };
   
+  // Special animation for EN_ROUTE status
+  const isEnRoute = status?.toUpperCase() === "EN_ROUTE";
+  
   return (
     <span
       className={cn(
         "inline-block rounded-full px-3 py-1 text-xs font-bold shadow-sm transition-transform",
         animated
-          ? "animate-bounce"
+          ? isEnRoute 
+            ? "animate-pulse" 
+            : "animate-bounce"
           : "animate-fade-in",
         mapping.color,
       )}
