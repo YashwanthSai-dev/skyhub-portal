@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -23,6 +24,7 @@ interface UserContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
+  isEmployee: boolean; // Added for backward compatibility
   login: (params: LoginParams) => Promise<boolean>;
   logout: () => void;
 }
@@ -91,6 +93,8 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const isAdmin = user?.role === 'admin';
+  // For backward compatibility - treat admin users as employees
+  const isEmployee = isAdmin;
 
   return (
     <UserContext.Provider 
@@ -99,6 +103,7 @@ export const UserAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isAuthenticated: !!user, 
         isLoading,
         isAdmin, 
+        isEmployee,
         login, 
         logout 
       }}

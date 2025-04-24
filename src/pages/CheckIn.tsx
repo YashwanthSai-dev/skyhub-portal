@@ -14,7 +14,7 @@ import { CheckCircle } from 'lucide-react';
 
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
-  const { isEmployee } = useUserAuth();
+  const { isAdmin } = useUserAuth(); // Changed from isEmployee to isAdmin
   const [checkedInCount, setCheckedInCount] = useState(0);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const CheckIn = () => {
             <TabsList className="mb-6 bg-white border border-gray-200 shadow-sm p-1 rounded-lg">
               <TabsTrigger value="check-in" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Passenger Check-in</TabsTrigger>
               <TabsTrigger value="search" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Flight Search</TabsTrigger>
-              {isEmployee && (
+              {isAdmin && (
                 <TabsTrigger value="admin" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Admin: Upload Flight Data</TabsTrigger>
               )}
             </TabsList>
@@ -86,7 +86,7 @@ const CheckIn = () => {
               <FlightSearchTab flights={flights} />
             </TabsContent>
 
-            {isEmployee && (
+            {isAdmin && (
               <TabsContent value="admin" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
                 <AdminTab 
                   flights={flights} 
