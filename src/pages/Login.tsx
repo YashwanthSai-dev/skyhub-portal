@@ -7,8 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useUserAuth } from '@/hooks/useUserAuth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserIcon, Users } from 'lucide-react';
+import { UserIcon } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,7 +17,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState('');
-  const [loginType, setLoginType] = useState<'passenger' | 'employee'>('passenger');
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -46,11 +44,10 @@ const Login = () => {
         password,
         name: isSignUp ? name : undefined,
         isSignUp,
-        role: loginType
+        role: 'passenger'
       });
 
       if (success) {
-        // Success notification is now handled in the useUserAuth hook
         navigate('/');
       } else {
         toast.error(isSignUp ? "Failed to create account. Email may already be in use." : "Invalid credentials. Please check your email and try again.");
@@ -80,29 +77,6 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs 
-            value={loginType} 
-            onValueChange={(value) => setLoginType(value as 'passenger' | 'employee')}
-            className="mb-6"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="passenger" className="flex items-center gap-2">
-                <UserIcon className="h-4 w-4" />
-                Passenger
-              </TabsTrigger>
-              <TabsTrigger value="employee" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Employee
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="passenger" className="mt-2 text-center text-sm text-muted-foreground">
-              {isSignUp ? "Create a passenger account to book flights and check-in" : "Access your bookings and check-in for flights"}
-            </TabsContent>
-            <TabsContent value="employee" className="mt-2 text-center text-sm text-muted-foreground">
-              {isSignUp ? "Employee registration requires approval" : "Staff portal for flight and passenger management"}
-            </TabsContent>
-          </Tabs>
-          
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div className="space-y-2">

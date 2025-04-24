@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +12,6 @@ import FlightPricePrediction from "./pages/FlightPricePrediction";
 import Chatbot from "./pages/Chatbot";
 import Login from "./pages/Login";
 import Booking from "./pages/Booking";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
 import LiveFlightTracker from "./pages/LiveFlightTracker";
 
 const queryClient = new QueryClient();
@@ -30,13 +28,11 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/check-in" element={<CheckIn />} />
             <Route path="/booking" element={<Booking />} />
-            <Route path="/employee" element={<EmployeeDashboard />} />
             <Route path="/report" element={<Report />} />
             <Route path="/reports" element={<Navigate to="/report" replace />} />
             <Route path="/price-prediction" element={<FlightPricePrediction />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/flight-tracker" element={<LiveFlightTracker />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
