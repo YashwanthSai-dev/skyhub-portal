@@ -1,40 +1,16 @@
 
 import React, { useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface CSVUploaderProps {
-  onCSVParsed: (data: any[]) => void;
-  parseCSVData: (csvText: string) => any[];
+  onFileUpload: (file: File) => void;
 }
 
-const CSVUploader: React.FC<CSVUploaderProps> = ({ onCSVParsed, parseCSVData }) => {
+const CSVUploader: React.FC<CSVUploaderProps> = ({ onFileUpload }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  const handleFileUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const data = parseCSVData(text);
-        onCSVParsed(data);
-        toast({
-          title: 'Success',
-          description: `Uploaded ${data.length} flight records successfully`,
-        });
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to parse CSV file',
-          variant: 'destructive',
-        });
-      }
-    };
-    reader.readAsText(file);
-  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -50,7 +26,7 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onCSVParsed, parseCSVData }) 
     setIsDragging(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
+      onFileUpload(e.dataTransfer.files[0]);
     }
   };
 
@@ -60,7 +36,7 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onCSVParsed, parseCSVData }) 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFileUpload(e.target.files[0]);
+      onFileUpload(e.target.files[0]);
     }
   };
 

@@ -14,7 +14,7 @@ import { CheckCircle } from 'lucide-react';
 
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
-  const { isAdmin } = useUserAuth(); // Changed from isEmployee to isAdmin
+  const { isAdmin } = useUserAuth(); // Using isAdmin directly
   const [checkedInCount, setCheckedInCount] = useState(0);
 
   useEffect(() => {

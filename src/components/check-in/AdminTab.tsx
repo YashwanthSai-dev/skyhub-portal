@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CSVUploader } from '@/components/CSVUploader';
+import CSVUploader from '@/components/CSVUploader';
 import { Flight } from '@/data/flightData';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
