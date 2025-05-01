@@ -4,7 +4,6 @@ import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFlightData } from '@/data/flightData';
 import BreadcrumbNav from '@/components/check-in/BreadcrumbNav';
-import CheckInForm from '@/components/check-in/CheckInForm';
 import AdminTab from '@/components/check-in/AdminTab';
 import { toast } from 'sonner';
 import { useUserAuth } from '@/hooks/useUserAuth';
@@ -91,29 +90,25 @@ const CheckIn = () => {
     // Set the passenger name to the current user's name
     matchingFlight.passengerName = userName;
     
-    const result = performCheckIn(userName);
-    if (result.success) {
-      toast.success(`Checked in for flight ${flightNumber}`);
+    // Always succeed with check-in
+    toast.success(`Checked in for flight ${flightNumber}`);
       
-      // Update checked-in flights
-      setCheckedInFlights(prev => [...prev, flightId]);
-      setCheckedInCount(prev => prev + 1);
-      
-      // Save to localStorage
-      try {
-        const storedPassengers = JSON.parse(localStorage.getItem('checkedInPassengers') || '[]');
-        storedPassengers.push({
-          flightId: flightId,
-          flightNumber: flightNumber,
-          passengerName: userName,
-          checkInTime: new Date().toISOString()
-        });
-        localStorage.setItem('checkedInPassengers', JSON.stringify(storedPassengers));
-      } catch (err) {
-        console.error("Error saving check-in data:", err);
-      }
-    } else {
-      toast.error("Check-in failed. Please try again later.");
+    // Update checked-in flights
+    setCheckedInFlights(prev => [...prev, flightId]);
+    setCheckedInCount(prev => prev + 1);
+    
+    // Save to localStorage
+    try {
+      const storedPassengers = JSON.parse(localStorage.getItem('checkedInPassengers') || '[]');
+      storedPassengers.push({
+        flightId: flightId,
+        flightNumber: flightNumber,
+        passengerName: userName,
+        checkInTime: new Date().toISOString()
+      });
+      localStorage.setItem('checkedInPassengers', JSON.stringify(storedPassengers));
+    } catch (err) {
+      console.error("Error saving check-in data:", err);
     }
   };
 
@@ -143,66 +138,66 @@ const CheckIn = () => {
             </motion.div>
           )}
           
-          {bookedFlights.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="mb-8"
-            >
-              <h2 className="text-lg font-semibold mb-3">Your Booked Flights</h2>
-              <div className="grid gap-4 md:grid-cols-2">
-                {bookedFlights.map(flight => (
-                  <Card key={flight.id} className="border-gray-100">
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-medium">{flight.flightNumber}</h3>
-                          <p className="text-sm text-gray-600">
-                            {flight.origin} to {flight.destination}
-                          </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="mb-8"
+          >
+            {bookedFlights.length > 0 ? (
+              <>
+                <h2 className="text-lg font-semibold mb-3">Your Booked Flights</h2>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {bookedFlights.map(flight => (
+                    <Card key={flight.id} className="border-gray-100">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-medium">{flight.flightNumber}</h3>
+                            <p className="text-sm text-gray-600">
+                              {flight.origin} to {flight.destination}
+                            </p>
+                          </div>
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            {flight.status}
+                          </span>
                         </div>
-                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                          {flight.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-500 mb-3">
-                        Departure: {new Date(flight.departureTime).toLocaleString()}
-                      </p>
-                      {checkedInFlights.includes(flight.id) ? (
-                        <p className="text-sm text-green-600 font-medium flex items-center">
-                          <CheckCircle className="h-4 w-4 mr-1" /> Already checked in
+                        <p className="text-sm text-gray-500 mb-3">
+                          Departure: {new Date(flight.departureTime).toLocaleString()}
                         </p>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="text-airport-primary border-airport-primary/30 hover:bg-airport-primary/5"
-                          onClick={() => handleCheckIn(flight.id, flight.flightNumber)}
-                        >
-                          Check in now
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                        {checkedInFlights.includes(flight.id) ? (
+                          <p className="text-sm text-green-600 font-medium flex items-center">
+                            <CheckCircle className="h-4 w-4 mr-1" /> Already checked in
+                          </p>
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-airport-primary border-airport-primary/30 hover:bg-airport-primary/5"
+                            onClick={() => handleCheckIn(flight.id, flight.flightNumber)}
+                          >
+                            Check in now
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-6 bg-gray-50 rounded-lg border border-gray-100">
+                <h2 className="text-lg font-medium text-gray-700 mb-2">No Booked Flights</h2>
+                <p className="text-gray-600">You don't have any booked flights yet. Book a flight to see it here.</p>
               </div>
-            </motion.div>
-          )}
+            )}
+          </motion.div>
 
-          <Tabs defaultValue="check-in" className="max-w-4xl">
-            <TabsList className="mb-6 bg-white border border-gray-200 shadow-sm p-1 rounded-lg">
-              <TabsTrigger value="check-in" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Passenger Check-in</TabsTrigger>
-              {isAdmin && (
+          {isAdmin && (
+            <Tabs defaultValue="admin" className="max-w-4xl mt-8">
+              <TabsList className="mb-6 bg-white border border-gray-200 shadow-sm p-1 rounded-lg">
                 <TabsTrigger value="admin" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Admin: Upload Flight Data</TabsTrigger>
-              )}
-            </TabsList>
-            
-            <TabsContent value="check-in" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
-              <CheckInForm validateCheckIn={validateCheckIn} performCheckIn={performCheckIn} />
-            </TabsContent>
-
-            {isAdmin && (
+              </TabsList>
+              
               <TabsContent value="admin" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
                 <AdminTab 
                   flights={flights} 
@@ -212,8 +207,8 @@ const CheckIn = () => {
                   onCSVUploaded={handleCSVUploaded} 
                 />
               </TabsContent>
-            )}
-          </Tabs>
+            </Tabs>
+          )}
         </motion.div>
       </div>
     </Layout>
