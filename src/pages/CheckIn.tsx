@@ -80,6 +80,17 @@ const CheckIn = () => {
       return;
     }
     
+    // Find the flight in our data
+    const matchingFlight = flights.find(flight => flight.id === flightId);
+    
+    if (!matchingFlight) {
+      toast.error(`Flight with ID ${flightId} not found`);
+      return;
+    }
+    
+    // Set the passenger name to the current user's name
+    matchingFlight.passengerName = userName;
+    
     const result = performCheckIn(userName);
     if (result.success) {
       toast.success(`Checked in for flight ${flightNumber}`);
