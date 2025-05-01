@@ -5,13 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFlightData } from '@/data/flightData';
 import BreadcrumbNav from '@/components/check-in/BreadcrumbNav';
 import CheckInForm from '@/components/check-in/CheckInForm';
-import FlightSearchTab from '@/components/check-in/FlightSearchTab';
 import AdminTab from '@/components/check-in/AdminTab';
 import { toast } from 'sonner';
 import { useUserAuth } from '@/hooks/useUserAuth';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // Interface for booked flights
 interface BookedFlight {
@@ -25,9 +25,10 @@ interface BookedFlight {
 
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
-  const { isAdmin, user } = useUserAuth(); // Using isAdmin directly
+  const { isAdmin, user } = useUserAuth();
   const [checkedInCount, setCheckedInCount] = useState(0);
   const [bookedFlights, setBookedFlights] = useState<BookedFlight[]>([]);
+  const [checkedInFlights, setCheckedInFlights] = useState<string[]>([]);
 
   useEffect(() => {
     if (flights.length > 0 && !loading && !error) {
@@ -43,6 +44,11 @@ const CheckIn = () => {
       if (storedPassengers) {
         const passengers = JSON.parse(storedPassengers);
         setCheckedInCount(passengers.length);
+        
+        // Extract flight IDs that have been checked in
+        const flightIds = passengers.map((p: any) => p.flightId);
+        setCheckedInFlights(flightIds);
+        
         console.log(`Loaded ${passengers.length} checked-in passengers from database`);
       }
     } catch (err) {
@@ -65,6 +71,39 @@ const CheckIn = () => {
   const handleCSVUploaded = (data: any[]) => {
     console.log("Uploaded flight data:", data);
     setFlights(data);
+  };
+
+  const handleCheckIn = (flightId: string, flightNumber: string) => {
+    const userName = user?.name || "";
+    if (!userName) {
+      toast.error("Please login to check in");
+      return;
+    }
+    
+    const result = performCheckIn(userName);
+    if (result.success) {
+      toast.success(`Checked in for flight ${flightNumber}`);
+      
+      // Update checked-in flights
+      setCheckedInFlights(prev => [...prev, flightId]);
+      setCheckedInCount(prev => prev + 1);
+      
+      // Save to localStorage
+      try {
+        const storedPassengers = JSON.parse(localStorage.getItem('checkedInPassengers') || '[]');
+        storedPassengers.push({
+          flightId: flightId,
+          flightNumber: flightNumber,
+          passengerName: userName,
+          checkInTime: new Date().toISOString()
+        });
+        localStorage.setItem('checkedInPassengers', JSON.stringify(storedPassengers));
+      } catch (err) {
+        console.error("Error saving check-in data:", err);
+      }
+    } else {
+      toast.error("Check-in failed. Please try again later.");
+    }
   };
 
   return (
@@ -119,17 +158,20 @@ const CheckIn = () => {
                       <p className="text-sm text-gray-500 mb-3">
                         Departure: {new Date(flight.departureTime).toLocaleString()}
                       </p>
-                      <button
-                        onClick={() => {
-                          const result = performCheckIn(user?.name || "");
-                          if (result.success) {
-                            toast.success(`Checked in for flight ${flight.flightNumber}`);
-                          }
-                        }}
-                        className="text-sm text-airport-primary hover:underline"
-                      >
-                        Check in now
-                      </button>
+                      {checkedInFlights.includes(flight.id) ? (
+                        <p className="text-sm text-green-600 font-medium flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-1" /> Already checked in
+                        </p>
+                      ) : (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-airport-primary border-airport-primary/30 hover:bg-airport-primary/5"
+                          onClick={() => handleCheckIn(flight.id, flight.flightNumber)}
+                        >
+                          Check in now
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -140,7 +182,6 @@ const CheckIn = () => {
           <Tabs defaultValue="check-in" className="max-w-4xl">
             <TabsList className="mb-6 bg-white border border-gray-200 shadow-sm p-1 rounded-lg">
               <TabsTrigger value="check-in" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Passenger Check-in</TabsTrigger>
-              <TabsTrigger value="search" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Flight Search</TabsTrigger>
               {isAdmin && (
                 <TabsTrigger value="admin" className="data-[state=active]:bg-airport-primary data-[state=active]:text-white rounded-md transition-all">Admin: Upload Flight Data</TabsTrigger>
               )}
@@ -148,10 +189,6 @@ const CheckIn = () => {
             
             <TabsContent value="check-in" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
               <CheckInForm validateCheckIn={validateCheckIn} performCheckIn={performCheckIn} />
-            </TabsContent>
-
-            <TabsContent value="search" className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
-              <FlightSearchTab flights={flights} />
             </TabsContent>
 
             {isAdmin && (
