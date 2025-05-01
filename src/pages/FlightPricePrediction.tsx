@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, TrendingUp } from 'lucide-react';
+import { CalendarIcon, TrendingUp, Check } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const airlines = [
   "Emirates", "Qatar Airways", "Singapore Airlines", "Air France", 
@@ -31,6 +32,8 @@ const FlightPricePrediction = () => {
   const [passengers, setPassengers] = useState('1');
   const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
+  const navigate = useNavigate();
   
   const handlePredict = () => {
     // Validate inputs
@@ -56,6 +59,45 @@ const FlightPricePrediction = () => {
       setIsLoading(false);
       toast.success('Price prediction complete!');
     }, 1500);
+  };
+  
+  const handleBooking = () => {
+    if (!predictedPrice || !origin || !destination || !departureDate) {
+      toast.error('Cannot book without complete flight information');
+      return;
+    }
+
+    setIsBooking(true);
+
+    // Generate a unique flight ID for this prediction
+    const flightId = `FL-${Math.floor(Math.random() * 10000)}`;
+    
+    // Simulate booking process
+    setTimeout(() => {
+      // Create a flight object with basic information
+      const flightData = {
+        id: flightId,
+        flightNumber: `${airline.substring(0, 2).toUpperCase()}${Math.floor(Math.random() * 1000)}`,
+        origin,
+        destination,
+        departureTime: departureDate.toISOString(),
+        arrivalTime: returnDate ? returnDate.toISOString() : new Date(departureDate.getTime() + 3600000 * 3).toISOString(),
+        price: predictedPrice,
+        airline,
+        status: 'CONFIRMED'
+      };
+      
+      // Save to localStorage for persistence
+      const bookedFlights = JSON.parse(localStorage.getItem('bookedFlights') || '[]');
+      bookedFlights.push(flightData);
+      localStorage.setItem('bookedFlights', JSON.stringify(bookedFlights));
+      
+      setIsBooking(false);
+      toast.success('Flight booked successfully!');
+      
+      // Navigate to booking page with the flight ID
+      navigate(`/booking?flightId=${flightId}`);
+    }, 2000);
   };
   
   const resetForm = () => {
@@ -213,10 +255,24 @@ const FlightPricePrediction = () => {
               <div className="text-3xl font-bold text-airport-primary">
                 ${predictedPrice.toFixed(2)}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
                 This is an estimate based on historical data and current market trends.
                 Actual prices may vary.
               </p>
+              
+              <Button 
+                onClick={handleBooking} 
+                className="w-full mt-2 bg-airport-primary hover:bg-airport-primary/90"
+                disabled={isBooking}
+              >
+                {isBooking ? (
+                  <>Processing booking...</>
+                ) : (
+                  <>
+                    <Check className="mr-1 h-4 w-4" /> Book this flight now (${predictedPrice.toFixed(2)})
+                  </>
+                )}
+              </Button>
             </CardFooter>
           )}
         </Card>

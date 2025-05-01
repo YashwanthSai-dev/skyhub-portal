@@ -8,7 +8,8 @@ import {
   CheckSquare,
   TrendingUp,
   MessageCircle,
-  Globe
+  Globe,
+  Coffee
 } from 'lucide-react';
 import { 
   Sidebar as SidebarComponent,
@@ -71,6 +72,14 @@ const Sidebar = () => {
                 <Link to="/check-in" className="transition-all duration-200 hover:translate-x-1">
                   <CheckSquare className="h-4 w-4" />
                   <span>Web Check-In</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild className={isActive('/airport-facilities') ? 'bg-gray-100 text-airport-primary' : ''}>
+                <Link to="/airport-facilities" className="transition-all duration-200 hover:translate-x-1">
+                  <Coffee className="h-4 w-4" />
+                  <span>Airport Facilities</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

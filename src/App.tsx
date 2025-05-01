@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +14,7 @@ import Chatbot from "./pages/Chatbot";
 import Login from "./pages/Login";
 import Booking from "./pages/Booking";
 import LiveFlightTracker from "./pages/LiveFlightTracker";
+import AirportFacilities from "./pages/AirportFacilities";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +35,7 @@ const App = () => (
             <Route path="/price-prediction" element={<FlightPricePrediction />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/flight-tracker" element={<LiveFlightTracker />} />
+            <Route path="/airport-facilities" element={<AirportFacilities />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

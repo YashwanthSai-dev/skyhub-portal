@@ -11,11 +11,23 @@ import { toast } from 'sonner';
 import { useUserAuth } from '@/hooks/useUserAuth';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+
+// Interface for booked flights
+interface BookedFlight {
+  id: string;
+  flightNumber: string;
+  origin: string;
+  destination: string;
+  departureTime: string;
+  status: string;
+}
 
 const CheckIn = () => {
   const { flights, setFlights, loading, error, validateCheckIn, performCheckIn, parseCSVData } = useFlightData();
-  const { isAdmin } = useUserAuth(); // Using isAdmin directly
+  const { isAdmin, user } = useUserAuth(); // Using isAdmin directly
   const [checkedInCount, setCheckedInCount] = useState(0);
+  const [bookedFlights, setBookedFlights] = useState<BookedFlight[]>([]);
 
   useEffect(() => {
     if (flights.length > 0 && !loading && !error) {
@@ -35,6 +47,18 @@ const CheckIn = () => {
       }
     } catch (err) {
       console.error("Error reading stored passengers:", err);
+    }
+    
+    // Load booked flights from localStorage
+    try {
+      const storedBookedFlights = localStorage.getItem('bookedFlights');
+      if (storedBookedFlights) {
+        const parsedFlights = JSON.parse(storedBookedFlights);
+        setBookedFlights(parsedFlights);
+        console.log(`Loaded ${parsedFlights.length} booked flights from database`);
+      }
+    } catch (err) {
+      console.error("Error reading booked flights:", err);
     }
   }, []);
 
@@ -66,6 +90,50 @@ const CheckIn = () => {
               <p className="text-blue-800">
                 You have {checkedInCount} checked-in {checkedInCount === 1 ? 'passenger' : 'passengers'} in the system.
               </p>
+            </motion.div>
+          )}
+          
+          {bookedFlights.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="mb-8"
+            >
+              <h2 className="text-lg font-semibold mb-3">Your Booked Flights</h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {bookedFlights.map(flight => (
+                  <Card key={flight.id} className="border-gray-100">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium">{flight.flightNumber}</h3>
+                          <p className="text-sm text-gray-600">
+                            {flight.origin} to {flight.destination}
+                          </p>
+                        </div>
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                          {flight.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-3">
+                        Departure: {new Date(flight.departureTime).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => {
+                          const result = performCheckIn(user?.name || "");
+                          if (result.success) {
+                            toast.success(`Checked in for flight ${flight.flightNumber}`);
+                          }
+                        }}
+                        className="text-sm text-airport-primary hover:underline"
+                      >
+                        Check in now
+                      </button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </motion.div>
           )}
 

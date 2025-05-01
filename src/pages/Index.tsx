@@ -3,7 +3,7 @@ import React from 'react';
 import Layout from '@/components/layout/Layout';
 import FlightSearch from '@/components/dashboard/FlightSearch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plane, MessageCircle, CalendarDays, TrendingUp, CheckSquare, BarChart3 } from 'lucide-react';
+import { Plane, MessageCircle, CalendarDays, TrendingUp, CheckSquare, BarChart3, Coffee } from 'lucide-react';
 import { useFlightData } from '@/data/flightData';
 import { motion } from "framer-motion";
 
@@ -66,6 +66,11 @@ const Index = () => {
                   icon={<CheckSquare />}
                   title="Web Check-In" 
                   description="Hassle-free online check-in for passengers to save time at the airport."
+                />
+                <FeatureCard 
+                  icon={<Coffee />}
+                  title="Lounges & Restaurants" 
+                  description="Explore airport lounges and restaurants for a comfortable journey."
                 />
                 <FeatureCard 
                   icon={<BarChart3 />}
